@@ -12,7 +12,8 @@ exports.createUser = (req, res, next) => {
   const hash = bcrypt.hashSync(newUserData.password, salt);
   newUserData.password = hash;
 
-  Promise.resolve(db.user.create(newUserData))
+  db.user
+    .create(newUserData)
     .then(createdUser => {
       logger.info(`User ${createdUser.dataValues.firstName} was created.`);
       const data = {
@@ -32,8 +33,14 @@ exports.createUser = (req, res, next) => {
 exports.signIn = async (req, res, next) => {
   const paswordReq = req.body.password;
   const { email } = req.body;
-  const dbUser = await db.user.findOne({ where: { email } });
-  if (await bcrypt.compareSync(paswordReq, dbUser.dataValues.password)) {
+  let dbUser = '';
+  try {
+    dbUser = await db.user.findOne({ where: { email } });
+  } catch {
+    next(errors.databaseError('Error looking for user in database'));
+  }
+
+  if (bcrypt.compareSync(paswordReq, dbUser.dataValues.password)) {
     logger.info(`User ${dbUser.dataValues.firstName} logged with correct password. `);
     // Return token
     const token = jwt.sign({ id: dbUser.dataValues.id }, process.env.SECRET);
