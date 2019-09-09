@@ -23,6 +23,17 @@ exports.checks = [
     .withMessage('Password must be alphanumeric')
 ];
 
+exports.checksSignIn = [
+  check('email')
+    .isEmail()
+    .custom(email => email.includes('@wolox'))
+    .withMessage('Email must be wolox domain'),
+  check('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be 8 characters long')
+    .isAlphanumeric()
+    .withMessage('Password must be alphanumeric')
+];
 exports.validateChecks = (req, res, next) => {
   const errs = validationResult(req);
   if (!errs.isEmpty()) {

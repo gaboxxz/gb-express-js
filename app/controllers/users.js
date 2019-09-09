@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const logger = require('../../app/logger');
 const db = require('../models');
@@ -26,4 +27,18 @@ exports.createUser = (req, res, next) => {
       logger.error('Error inserting user in database');
       next(errors.databaseError(err.message));
     });
+};
+
+exports.signIn = async (req, res, next) => {
+  const paswordReq = req.body.password;
+  const { email } = req.body;
+  const dbUser = await db.user.findOne({ where: { email } });
+  if (await bcrypt.compareSync(paswordReq, dbUser.dataValues.password)) {
+    logger.info(`User ${dbUser.dataValues.firstName} logged with correct password. `);
+    // Return token
+    const token = jwt.sign({ id: dbUser.dataValues.id }, process.env.SECRET);
+    res.status(200).send({ auth: true, token });
+  } else {
+    next(errors.not_found_error('Invalid email or password'));
+  }
 };
