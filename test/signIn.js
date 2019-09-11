@@ -1,7 +1,6 @@
 const app = require('../server');
 
 const supertest = require('supertest');
-// const jwt = require('jsonwebtoken');
 
 const request = supertest(app);
 describe('Post /users/sessions', () => {
