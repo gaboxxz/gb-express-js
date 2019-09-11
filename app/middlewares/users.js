@@ -9,7 +9,6 @@ exports.checks = [
     .custom(email => email.includes('@wolox'))
     .withMessage('Email must be wolox domain')
     .custom(async email => {
-      // const user = ;
       if (await db.user.findOne({ where: { email } })) {
         throw errors.databaseError('User already exists.');
       }
