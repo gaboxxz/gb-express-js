@@ -27,12 +27,15 @@ exports.checksSignIn = [
   check('email')
     .isEmail()
     .custom(email => email.includes('@wolox'))
-    .withMessage('Wrong Email or Password'),
+    .custom(async email => {
+      const user = await db.user.findOne({ where: { email } });
+      if (!user) {
+        throw errors.not_found_error('Wrong Email or Password');
+      }
+    }),
   check('password')
     .isLength({ min: 8 })
-    .withMessage('Wrong Email or Password')
     .isAlphanumeric()
-    .withMessage('Wrong Email or Password')
 ];
 exports.validateChecks = (req, res, next) => {
   const errs = validationResult(req);
@@ -46,8 +49,8 @@ exports.validateChecks = (req, res, next) => {
 exports.validateChecksSignIn = (req, res, next) => {
   const errs = validationResult(req);
   if (!errs.isEmpty()) {
-    logger.error('User was not created. At least one field validation failed.');
-    return res.status(422).json({ FailedValidations: 'Wromg Email or Password' });
+    logger.error('Field validations failed. Request was rejected');
+    return next(errors.not_found_error('Wrong Email or Password'));
   }
   return next();
 };

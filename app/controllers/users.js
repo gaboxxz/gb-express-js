@@ -39,13 +39,12 @@ exports.signIn = async (req, res, next) => {
   } catch {
     next(errors.databaseError('Error looking for user in database'));
   }
-
   if (bcrypt.compareSync(paswordReq, dbUser.dataValues.password)) {
     logger.info(`User ${dbUser.dataValues.firstName} logged with correct password. `);
     // Return token
     const token = jwt.sign({ id: dbUser.dataValues.id }, process.env.SECRET);
     res.status(200).send({ auth: true, token });
   } else {
-    next(errors.not_found_error('Invalid email or password'));
+    next(errors.not_found_error('Wrong Email or Password'));
   }
 };
