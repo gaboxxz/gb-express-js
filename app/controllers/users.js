@@ -48,3 +48,33 @@ exports.signIn = async (req, res, next) => {
     next(errors.not_found_error('Wrong Email or Password'));
   }
 };
+
+const userInfo = user => {
+  const data = {
+    id: user.id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName
+  };
+  return data;
+};
+
+exports.getUsers = (req, res, next) => {
+  const { pageSize } = req.query;
+  // -1 is to start pagues from number 1 and not from cero
+  const offset = (req.query.page - 1) * pageSize;
+  const limit = offset + pageSize;
+  db.user
+    .findAll({
+      offset,
+      limit,
+      where: {}
+    })
+    .then(usersList => {
+      res.send(usersList.map(user => userInfo(user)));
+    })
+
+    .catch(err => {
+      next(errors.databaseError(err.message));
+    });
+};
