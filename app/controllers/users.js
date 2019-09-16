@@ -1,50 +1,46 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const { serializeCreatedUser } = require('../serializers/users');
+const { mapUserCreateRequest } = require('../mappers/user');
+
 const logger = require('../../app/logger');
-const db = require('../models');
+const userDb = require('../services/database/users');
 const errors = require('../errors');
+const { paramsValidationsErrors } = require('../constants/errorsMessages');
 
-const saltRounds = 10;
 exports.createUser = (req, res, next) => {
-  const newUserData = req.body;
-  const salt = bcrypt.genSaltSync(saltRounds);
-  const hash = bcrypt.hashSync(newUserData.password, salt);
-  newUserData.password = hash;
+  const newUserData = mapUserCreateRequest(req.body);
 
-  db.user
-    .create(newUserData)
+  return userDb
+    .userNotExists(newUserData)
+    .then(user => {
+      if (user) {
+        throw errors.field_validations_failed([paramsValidationsErrors.emailAlreadyExists]);
+      }
+      return userDb.createUser(newUserData);
+    })
     .then(createdUser => {
       logger.info(`User ${createdUser.dataValues.firstName} was created.`);
-      const data = {
-        id: createdUser.dataValues.id,
-        firstName: createdUser.dataValues.firstName,
-        lastName: createdUser.dataValues.lastName,
-        email: createdUser.dataValues.email
-      };
-      res.status(201).send(data);
+      const serializedUser = serializeCreatedUser(createdUser);
+      return res.status(201).send(serializedUser);
     })
-    .catch(err => {
-      logger.error('Error inserting user in database');
-      next(errors.databaseError(err.message));
-    });
+    .catch(next);
 };
 
-exports.signIn = async (req, res, next) => {
-  const paswordReq = req.body.password;
-  const { email } = req.body;
-  let dbUser = '';
-  try {
-    dbUser = await db.user.findOne({ where: { email } });
-  } catch {
-    next(errors.databaseError('Error looking for user in database'));
-  }
-  if (bcrypt.compareSync(paswordReq, dbUser.dataValues.password)) {
-    logger.info(`User ${dbUser.dataValues.firstName} logged with correct password. `);
-    // Return token
-    const token = jwt.sign({ id: dbUser.dataValues.id }, process.env.SECRET);
-    res.status(200).send({ auth: true, token });
-  } else {
-    next(errors.not_found_error('Wrong Email or Password'));
-  }
-};
+exports.signIn = (req, res, next) =>
+  // const userToSignIn = mapUserCreateRequest(req.body);
+  userDb
+    .userNotExists(req.body)
+    .then(user => {
+      if (!user) {
+        throw errors.not_found_error();
+      }
+      if (bcrypt.compareSync(req.body.password, user.dataValues.password)) {
+        logger.info(`User ${user.dataValues.firstName} logged with correct password. `);
+        const token = jwt.sign({ id: user.dataValues.id }, process.env.SECRET); // sacar a hepler y usar config.common.seession.secret
+        return res.status(200).send({ auth: true, token });
+      }
+      throw errors.field_validations_failed('Password not match');
+    })
+    .catch(next);
