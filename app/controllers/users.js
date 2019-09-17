@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
 const { serializeCreatedUser } = require('../serializers/users');
 const { mapUserCreateRequest } = require('../mappers/user');
@@ -8,6 +7,7 @@ const logger = require('../../app/logger');
 const userDb = require('../services/database/users');
 const errors = require('../errors');
 const { paramsValidationsErrors } = require('../constants/errorsMessages');
+const helpers = require('../helpers');
 
 exports.createUser = (req, res, next) => {
   const newUserData = mapUserCreateRequest(req.body);
@@ -29,7 +29,6 @@ exports.createUser = (req, res, next) => {
 };
 
 exports.signIn = (req, res, next) =>
-  // const userToSignIn = mapUserCreateRequest(req.body);
   userDb
     .userNotExists(req.body)
     .then(user => {
@@ -37,8 +36,8 @@ exports.signIn = (req, res, next) =>
         throw errors.not_found_error();
       }
       if (bcrypt.compareSync(req.body.password, user.dataValues.password)) {
-        logger.info(`User ${user.dataValues.firstName} logged with correct password. `);
-        const token = jwt.sign({ id: user.dataValues.id }, process.env.SECRET); // sacar a hepler y usar config.common.seession.secret
+        logger.info(`User ${user.dataValues.firstName} logged with correct password.`);
+        const token = helpers.createToken({ id: user.dataValues.id });
         return res.status(200).send({ auth: true, token });
       }
       throw errors.field_validations_failed('Password not match');
