@@ -38,7 +38,7 @@ exports.signIn = (req, res, next) =>
       if (bcrypt.compareSync(req.body.password, user.dataValues.password)) {
         logger.info(`User ${user.dataValues.firstName} logged with correct password.`);
         const token = helpers.createToken({ id: user.dataValues.id });
-        // add serializer
+        // TODO:add serializer
         return res.status(200).send({ session: { auth: true, token } });
       }
       throw errors.field_validations_failed(paramsValidationsErrors.passwordNotMatch);
