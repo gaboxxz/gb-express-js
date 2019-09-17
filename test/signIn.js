@@ -1,7 +1,17 @@
 const app = require('../server');
-
+const errors = require('../app/errors');
 const supertest = require('supertest');
-
+const { paramsValidationsErrors } = require('../app/constants/errorsMessages');
+const validUser = {
+  first_name: 'TestName',
+  last_name: 'TestLastName',
+  password: '12345678Ab',
+  email: 'Test@wolox.com'
+};
+const validSignIn = {
+  password: '12345678Ab',
+  email: 'Test@wolox.com'
+};
 const request = supertest(app);
 describe('Post /users/sessions', () => {
   beforeEach(async () => {
@@ -9,12 +19,7 @@ describe('Post /users/sessions', () => {
       .post('/users')
       .set('Content-Type', 'application/json')
       .set('Acccept', 'application/json')
-      .send({
-        firstName: 'TestName',
-        lastName: 'TestLastName',
-        password: '12345678Ab',
-        email: 'Test@wolox.com'
-      });
+      .send(validUser);
   });
 
   it('It signs in with valid email and password', async done => {
@@ -22,11 +27,13 @@ describe('Post /users/sessions', () => {
       .post('/users/sessions')
       .set('Content-Type', 'application/json')
       .set('Acccept', 'application/json')
-      .send({
-        password: '12345678Ab',
-        email: 'Test@wolox.com'
-      });
+      .send(validSignIn);
     expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('session');
+    expect(response.body.session).toHaveProperty('auth');
+    expect(response.body.session).toHaveProperty('token');
+    expect(response.body.session.auth).toBe(true);
+    expect(response.body.session.token).not.toBe('');
     done();
   });
 
@@ -36,14 +43,12 @@ describe('Post /users/sessions', () => {
       .set('Content-Type', 'application/json')
       .set('Acccept', 'application/json')
       .send({
-        password: '12345678Ab',
+        ...validSignIn,
         email: 'notRegisteredEmail@wolox.com'
       });
     expect(response.status).toBe(404);
-    expect(response.body).toMatchObject({
-      message: 'Wrong Email or Password',
-      internal_code: 'Not Found'
-    });
+    expect(response.body.internal_code).toBe(errors.NOT_FOUND_ERROR);
+    expect(response.body.message).toBe(paramsValidationsErrors.notFoundEmail);
     done();
   });
 
@@ -53,31 +58,12 @@ describe('Post /users/sessions', () => {
       .set('Content-Type', 'application/json')
       .set('Acccept', 'application/json')
       .send({
-        password: '000000099998',
-        email: 'Test@wolox.com'
+        ...validSignIn,
+        password: '000000ffffff'
       });
-    expect(response.status).toBe(404);
-    expect(response.body).toMatchObject({
-      message: 'Wrong Email or Password',
-      internal_code: 'Not Found'
-    });
-    done();
-  });
-
-  it('Tries to sign in with invalid email', async done => {
-    const response = await request
-      .post('/users/sessions')
-      .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
-      .send({
-        password: '000000099998',
-        email: 'Test@wolo.com'
-      });
-    expect(response.status).toBe(404);
-    expect(response.body).toMatchObject({
-      message: 'Wrong Email or Password',
-      internal_code: 'Not Found'
-    });
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(paramsValidationsErrors.passwordNotMatch);
+    expect(response.body.internal_code).toBe(errors.VALIDATION_ERROR);
     done();
   });
 });
