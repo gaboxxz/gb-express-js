@@ -61,9 +61,8 @@ describe('Post /users/sessions', () => {
         ...validSignIn,
         password: '000000ffffff'
       });
-    expect(response.status).toBe(400);
-    expect(response.body.message).toBe(paramsValidationsErrors.passwordNotMatch);
-    expect(response.body.internal_code).toBe(errors.VALIDATION_ERROR);
+    expect(response.status).toBe(401);
+    expect(response.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
     done();
   });
 });
