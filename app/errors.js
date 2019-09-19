@@ -23,3 +23,5 @@ exports.bad_request = message => internalError(message, exports.BAD_REQUEST);
 
 exports.UNAUTHORIZED_ERROR = 'Invalid credentials. ';
 exports.unauthorized_error = message => internalError(message, exports.UNAUTHORIZED_ERROR);
+exports.EMAIL_REGISTERED_ERROR = 'Email already exists on database';
+exports.email_registered_error = message => internalError(message, exports.EMAIL_REGISTERED_ERROR);
