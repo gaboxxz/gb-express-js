@@ -1,10 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { SALT_ROUNDS } = require('../constants');
 const config = require('../../config');
 exports.hashPassword = password => {
-  const salt = bcrypt.genSaltSync(SALT_ROUNDS);
-  const hash = bcrypt.hashSync(password, salt);
+  const hash = bcrypt.hashSync(password, parseInt(config.common.saltRounds));
   return hash;
 };
 
