@@ -5,7 +5,6 @@ const helpers = require('../helpers');
 const logger = require('../../app/logger');
 const userDb = require('../services/database/users');
 const errors = require('../errors');
-const { emailAlreadyExists, paramsValidationsErrors } = require('../constants/errorsMessages');
 
 exports.createUser = (req, res, next) => {
   const newUserData = mapUserCreateRequest(req.body);
@@ -14,7 +13,7 @@ exports.createUser = (req, res, next) => {
     .findUserByEmail(newUserData)
     .then(user => {
       if (user) {
-        throw errors.field_validations_failed([emailAlreadyExists]);
+        throw errors.email_registered_error();
       }
       return userDb.createUser(newUserData);
     })
@@ -32,7 +31,7 @@ exports.signIn = (req, res, next) => {
     .findUserByEmail(userToSignIn)
     .then(user => {
       if (!user) {
-        throw errors.not_found_error(paramsValidationsErrors.notFoundEmail);
+        throw errors.not_found_error();
       }
       if (helpers.passwordChecks(userToSignIn.password, user.password)) {
         logger.info(`User ${user.dataValues.firstName} logged with correct password.`);
@@ -40,6 +39,7 @@ exports.signIn = (req, res, next) => {
         const serializedToken = serializeToken(token);
         return res.status(200).send(serializedToken);
       }
+      logger.info('Invalid password');
       throw errors.unauthorized_error();
     })
     .catch(next);
