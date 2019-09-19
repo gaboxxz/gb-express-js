@@ -7,3 +7,5 @@ exports.hashPassword = password => {
 };
 
 exports.createToken = params => jwt.sign({ params }, config.common.session.secret);
+exports.passwordChecks = (requestPassword, encryptedPassword) =>
+  bcrypt.compareSync(requestPassword, encryptedPassword);

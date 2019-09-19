@@ -20,3 +20,6 @@ exports.field_validations_failed = message => internalError(message, exports.VAL
 
 exports.BAD_REQUEST = 'Bad request.';
 exports.bad_request = message => internalError(message, exports.BAD_REQUEST);
+
+exports.UNAUTHORIZED_ERROR = 'Invalid credentials. ';
+exports.unauthorized_error = message => internalError(message, exports.UNAUTHORIZED_ERROR);

@@ -1,6 +1,5 @@
-const bcrypt = require('bcrypt');
-
 const { serializeCreatedUser } = require('../serializers/users');
+const { serializeToken } = require('../serializers/auth');
 const { mapUserCreateRequest, mapUserSignIn } = require('../mappers/user');
 const helpers = require('../helpers');
 const logger = require('../../app/logger');
@@ -30,33 +29,18 @@ exports.createUser = (req, res, next) => {
 exports.signIn = (req, res, next) => {
   const userToSignIn = mapUserSignIn(req.body);
   userDb
-    .findUser(userToSignIn)
+    .findUserByEmail(userToSignIn)
     .then(user => {
       if (!user) {
         throw errors.not_found_error(paramsValidationsErrors.notFoundEmail);
       }
-      if (bcrypt.compareSync(req.body.password, user.dataValues.password)) {
+      if (helpers.passwordChecks(userToSignIn.password, user.password)) {
         logger.info(`User ${user.dataValues.firstName} logged with correct password.`);
-        const token = helpers.createToken({ id: user.dataValues.id });
-        // TODO:add serializer
-        return res.status(200).send({ session: { auth: true, token } });
+        const token = helpers.createToken({ id: user.id });
+        const serializedToken = serializeToken(token);
+        return res.status(200).send(serializedToken);
       }
-      throw errors.field_validations_failed(paramsValidationsErrors.passwordNotMatch);
+      throw errors.unauthorized_error();
     })
     .catch(next);
 };
-// userDb
-//   .findUser(req.body)
-//   .then(user => {
-//     if (!user) {
-//       throw errors.not_found_error(paramsValidationsErrors.notFoundEmail);
-//     }
-//     if (bcrypt.compareSync(req.body.password, user.dataValues.password)) {
-//       logger.info(`User ${user.dataValues.firstName} logged with correct password.`);
-//       const token = helpers.createToken({ id: user.dataValues.id });
-//       // TODO:add serializer
-//       return res.status(200).send({ session: { auth: true, token } });
-//     }
-//     throw errors.field_validations_failed(paramsValidationsErrors.passwordNotMatch);
-//   })
-//   .catch(next);
