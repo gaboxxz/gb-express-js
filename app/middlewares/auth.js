@@ -2,12 +2,15 @@
 // const logger = require('../logger');
 const errors = require('../errors');
 const jwt = require('jsonwebtoken');
-
-exports.auth = (req, res, next) => {
+const logger = require('../logger');
+const config = require('../../config');
+exports.authenticate = (req, res, next) => {
   try {
-    req.user = jwt.verify(req.headers.authorization, process.env.SECRET);
+    const decoded = jwt.verify(req.headers.authorization, config.common.session.secret);
+    req.userId = decoded.params.id;
+    logger.info('Valid token');
     next();
   } catch (err) {
-    next(errors.not_found_error('Invalid token'));
+    next(errors.unauthorized_error());
   }
 };

@@ -55,22 +55,16 @@ exports.signIn = (req, res, next) => {
 //   return data;
 // };
 
-// exports.getUsers = (req, res, next) => {
-//   const { pageSize } = req.query;
-//   // -1 is to start pagues from number 1 and not from cero
-//   const offset = (req.query.page - 1) * pageSize;
-//   const limit = offset + pageSize;
-//   db.user
-//     .findAll({
-//       offset,
-//       limit,
-//       where: {}
-//     })
-//     .then(usersList => {
-//       res.send(usersList.map(user => userInfo(user)));
-//     })
-
-//     .catch(err => {
-//       next(errors.databaseError(err.message));
-//     });
-// };
+exports.getUsers = (req, res, next) => {
+  const pageSize = parseInt(req.query.pageSize);
+  const offset = parseInt(req.query.page) * pageSize;
+  const limit = pageSize;
+  const attributes = ['id', 'email', 'first_name', 'last_name'];
+  console.log(`limit:${limit}  ofset:${offset}`);
+  userDb
+    .findAndCountAllUsersPaginated({ attributes, limit, offset, order: ['id'] })
+    .then(usersList => {
+      res.send(usersList);
+    })
+    .catch(next);
+};

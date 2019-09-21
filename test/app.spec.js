@@ -15,7 +15,6 @@ beforeEach(done => {
   truncateDatabase().then(() => done());
 });
 
-// including all test files
 const normalizedPath = path.join(__dirname, '.');
 
 const requireAllTestFiles = pathToSearch => {

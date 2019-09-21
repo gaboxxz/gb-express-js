@@ -15,3 +15,11 @@ exports.createUser = userToCreate => {
     throw errors.databaseError;
   }
 };
+
+exports.findAndCountAllUsersPaginated = params => {
+  try {
+    return db.user.findAndCountAll(params);
+  } catch {
+    throw errors.databaseError;
+  }
+};
