@@ -1,5 +1,4 @@
 const { serializeCreatedUser } = require('../serializers/users');
-const { serializeToken } = require('../serializers/auth');
 const { mapUserCreateRequest, mapUserSignIn } = require('../mappers/user');
 const helpers = require('../helpers');
 const logger = require('../../app/logger');
@@ -36,7 +35,7 @@ exports.signIn = (req, res, next) => {
       if (helpers.passwordChecks(userToSignIn.password, user.password)) {
         logger.info(`User ${user.dataValues.firstName} logged with correct password.`);
         const token = helpers.createToken({ id: user.id });
-        const serializedToken = serializeToken(token);
+        const serializedToken = { session: { auth: true, token } };
         return res.status(200).send(serializedToken);
       }
       logger.info('Invalid password');
