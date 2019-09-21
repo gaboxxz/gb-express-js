@@ -33,7 +33,7 @@ exports.signIn = (req, res, next) => {
         throw errors.not_found_error();
       }
       if (helpers.passwordChecks(userToSignIn.password, user.password)) {
-        logger.info(`User ${user.dataValues.firstName} logged with correct password.`);
+        logger.info(`User ${user.firstName} logged with correct password.`);
         const token = helpers.createToken({ id: user.id });
         const serializedToken = { session: { auth: true, token } };
         return res.status(200).send(serializedToken);
