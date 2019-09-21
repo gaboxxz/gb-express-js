@@ -45,22 +45,11 @@ exports.signIn = (req, res, next) => {
     .catch(next);
 };
 
-// const userInfo = user => {
-//   const data = {
-//     id: user.id,
-//     email: user.email,
-//     firstName: user.firstName,
-//     lastName: user.lastName
-//   };
-//   return data;
-// };
-
 exports.getUsers = (req, res, next) => {
   const pageSize = parseInt(req.query.pageSize);
   const offset = parseInt(req.query.page) * pageSize;
   const limit = pageSize;
   const attributes = ['id', 'email', 'first_name', 'last_name'];
-  console.log(`limit:${limit}  ofset:${offset}`);
   userDb
     .findAndCountAllUsersPaginated({ attributes, limit, offset, order: ['id'] })
     .then(usersList => {
