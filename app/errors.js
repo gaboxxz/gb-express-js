@@ -24,3 +24,6 @@ exports.badRequest = message => internalError(message, exports.BAD_REQUEST);
 
 exports.EMAIL_REGISTERED_ERROR = 'Email already exists on database';
 exports.emailRegisteredError = message => internalError(message, exports.EMAIL_REGISTERED_ERROR);
+
+exports.UNAUTHORIZED_ERROR = 'User unauthorized';
+exports.unauthorizedError = message => internalError(message, exports.UNAUTHORIZED_ERROR);
