@@ -9,3 +9,11 @@ exports.mapUserCreateRequest = userToMap => {
   };
   return userToCreate;
 };
+
+exports.mapUserSignIn = userToMap => {
+  const userToSignIn = {
+    email: userToMap.email,
+    password: userToMap.password
+  };
+  return userToSignIn;
+};
