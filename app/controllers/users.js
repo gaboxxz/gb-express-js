@@ -1,7 +1,7 @@
 const { serializeCreatedUser } = require('../serializers/users');
 const { mapUserCreateRequest, mapUserSignIn } = require('../mappers/user');
 const helpers = require('../helpers');
-const logger = require('../../app/logger');
+const logger = require('../logger');
 const userDb = require('../services/database/users');
 const errors = require('../errors');
 
