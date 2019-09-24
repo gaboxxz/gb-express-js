@@ -3,6 +3,7 @@ const { user } = require('../app/models/');
 const helpers = require('../app/helpers');
 const supertest = require('supertest');
 const { factory } = require('factory-girl');
+const errors = require('../app/errors');
 const validUser = {
   firstName: 'TestName',
   lastName: 'TestLastName',
@@ -105,6 +106,31 @@ describe('Get /users', () => {
         expect(res.body).toHaveProperty('rows');
         expect(res.status).toBe(200);
         expect(res.body.rows.length).toBe(16);
+        done();
+      });
+  });
+  it('Tries to get users list with invalid token', done => {
+    request
+      .get('/users')
+      .set('Content-Type', 'application/json')
+      .set('Acccept', 'application/json')
+      .set('authorization', '000000000FFFFFFFFFFFFF&&//%$')
+      .send()
+      .then(res => {
+        expect(res.body).toHaveProperty('internal_code');
+        expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
+        done();
+      });
+  });
+  it('Tries to get users list without token', done => {
+    request
+      .get('/users')
+      .set('Content-Type', 'application/json')
+      .set('Acccept', 'application/json')
+      .send()
+      .then(res => {
+        expect(res.body).toHaveProperty('internal_code');
+        expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
         done();
       });
   });

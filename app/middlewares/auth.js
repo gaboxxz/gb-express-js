@@ -11,6 +11,6 @@ exports.authenticate = (req, res, next) => {
     logger.info('Valid token');
     next();
   } catch (err) {
-    next(errors.unauthorized_error());
+    next(errors.unauthorizedError());
   }
 };
