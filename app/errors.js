@@ -13,6 +13,7 @@ exports.EXTERNAL_API_ERROR = 'externalApiError';
 exports.externalApiError = message => internalError(message, exports.EXTERNAL_API_ERROR);
 
 exports.NOT_FOUND_ERROR = 'Not Found';
+
 exports.notFoundError = message => internalError(message, exports.NOT_FOUND_ERROR);
 
 exports.VALIDATION_ERROR = 'Field validations failed.';
