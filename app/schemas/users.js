@@ -40,20 +40,3 @@ exports.signUp = {
     errorMessage: paramsValidationsErrors.passwordIsNotAlphanumeric
   }
 };
-
-exports.signIn = {
-  email: {
-    in: ['body'],
-    isEmail: true,
-    exists: true,
-    errorMessage: paramsValidationsErrors.invalidEmail,
-    custom: {
-      options: email => email.includes(config.common.emailDomain),
-      errorMessage: paramsValidationsErrors.invalidDomain
-    }
-  },
-  password: {
-    in: ['body'],
-    exists: true
-  }
-};

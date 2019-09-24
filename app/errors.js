@@ -22,8 +22,6 @@ exports.fieldValidationsFailed = message => internalError(message, exports.VALID
 exports.BAD_REQUEST = 'Bad request.';
 exports.badRequest = message => internalError(message, exports.BAD_REQUEST);
 
-exports.UNAUTHORIZED_ERROR = 'Invalid credentials. ';
-exports.unauthorized_error = message => internalError(message, exports.UNAUTHORIZED_ERROR);
 exports.EMAIL_REGISTERED_ERROR = 'Email already exists on database';
 exports.emailRegisteredError = message => internalError(message, exports.EMAIL_REGISTERED_ERROR);
 
