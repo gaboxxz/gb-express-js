@@ -1,7 +1,6 @@
 const { healthCheck } = require('./controllers/healthCheck');
 const albumsController = require('./controllers/albums');
 const usersController = require('./controllers/users');
-
 const { validateSchemaAndFail } = require('./middlewares/params_validator');
 const { signUp, signIn } = require('./schemas/users');
 exports.init = app => {

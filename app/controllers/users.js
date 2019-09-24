@@ -12,7 +12,7 @@ exports.createUser = (req, res, next) => {
     .findUserByEmail(newUserData)
     .then(user => {
       if (user) {
-        throw errors.email_registered_error();
+        throw errors.emailRegisteredError();
       }
       return userDb.createUser(newUserData);
     })
@@ -30,7 +30,7 @@ exports.signIn = (req, res, next) => {
     .findUserByEmail(userToSignIn)
     .then(user => {
       if (!user) {
-        throw errors.not_found_error();
+        throw errors.notFoundError();
       }
       if (helpers.passwordChecks(userToSignIn.password, user.password)) {
         logger.info(`User ${user.firstName} logged with correct password.`);
@@ -39,7 +39,7 @@ exports.signIn = (req, res, next) => {
         return res.status(200).send(serializedToken);
       }
       logger.info('Invalid password');
-      throw errors.unauthorized_error();
+      throw errors.unauthorizedError();
     })
     .catch(next);
 };
