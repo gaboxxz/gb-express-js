@@ -10,7 +10,6 @@ const statusCodes = {
   [errors.NOT_FOUND_ERROR]: 404,
   [errors.BAD_REQUEST_ERROR]: 400,
   [errors.VALIDATION_ERROR]: 400,
-  [errors.UNAUTHORIZED_ERROR]: 401,
   [errors.EMAIL_REGISTERED_ERROR]: 400
 };
 

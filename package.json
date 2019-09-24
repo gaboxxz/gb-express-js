@@ -62,7 +62,6 @@
     "express-validator": "^6.2.0",
     "express-wolox-logger": "0.0.2",
     "install": "^0.13.0",
-    "jsonwebtoken": "^8.5.1",
     "jwt-simple": "^0.5.1",
     "node-fetch": "^2.6.0",
     "npm": "^6.11.3",
