@@ -50,8 +50,10 @@ exports.getUsers = (req, res, next) => {
   const offset = parseInt(req.query.page) * pageSize;
   const limit = pageSize;
   const attributes = ['id', 'email', 'first_name', 'last_name'];
+  const params =
+    limit && offset >= 0 ? { attributes, limit, offset, order: ['id'] } : { attributes, order: ['id'] };
   userDb
-    .findAndCountAllUsersPaginated({ attributes, limit, offset, order: ['id'] })
+    .findAndCountAllUsersPaginated(params)
     .then(usersList => {
       res.send(usersList);
     })

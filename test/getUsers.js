@@ -56,10 +56,56 @@ describe('Get /users', () => {
         .send()
         .then(res => {
           expect(res.body).toHaveProperty('count');
-          // expect(res.body.count).toBe(expected);
           expect(res.body).toHaveProperty('rows');
           expect(res.status).toBe(200);
           expect(res.body.rows.length).toBe(expected);
         })
   );
+  it('Does not send page param, should return all users', done => {
+    request
+      .get('/users')
+      .set('Content-Type', 'application/json')
+      .set('Acccept', 'application/json')
+      .set('authorization', token)
+      .query({ pageSize: 1 })
+      .send()
+      .then(res => {
+        expect(res.body).toHaveProperty('count');
+        expect(res.body).toHaveProperty('rows');
+        expect(res.status).toBe(200);
+        expect(res.body.rows.length).toBe(16);
+        done();
+      });
+  });
+  it('Does not send any param, should return all users', done => {
+    request
+      .get('/users')
+      .set('Content-Type', 'application/json')
+      .set('Acccept', 'application/json')
+      .set('authorization', token)
+      .send()
+      .then(res => {
+        expect(res.body).toHaveProperty('count');
+        expect(res.body).toHaveProperty('rows');
+        expect(res.status).toBe(200);
+        expect(res.body.rows.length).toBe(16);
+        done();
+      });
+  });
+  it('Does not send pageSize param, should return all users', done => {
+    request
+      .get('/users')
+      .set('Content-Type', 'application/json')
+      .set('Acccept', 'application/json')
+      .set('authorization', token)
+      .query({ page: 1 })
+      .send()
+      .then(res => {
+        expect(res.body).toHaveProperty('count');
+        expect(res.body).toHaveProperty('rows');
+        expect(res.status).toBe(200);
+        expect(res.body.rows.length).toBe(16);
+        done();
+      });
+  });
 });

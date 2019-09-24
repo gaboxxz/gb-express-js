@@ -57,3 +57,28 @@ exports.signIn = {
     exists: true
   }
 };
+
+exports.getUsersSchema = {
+  page: {
+    in: ['query'],
+    optional: true,
+    isNumeric: true,
+    errorMessage: 'Field page must be numeric',
+    // TODO: Use constants
+    custom: {
+      options: number => number >= 0,
+      errorMessage: 'Field must greater than 0'
+    }
+  },
+  pageSize: {
+    in: ['query'],
+    optional: true,
+    isNumeric: true,
+    errorMessage: 'Field page must be numeric',
+    // TODO: Use constants
+    custom: {
+      options: number => number >= 0,
+      errorMessage: 'Field must greater than 0'
+    }
+  }
+};
