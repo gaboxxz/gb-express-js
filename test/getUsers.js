@@ -35,20 +35,24 @@ const request = supertest(app);
 describe('Get /users', () => {
   let token = null;
   beforeEach(() =>
-    Promise.all([factory.createMany('user', 15), factory.create('user', validUser)]).then(() =>
-      request
-        .post('/users/sessions')
-        .send(validSignIn)
-        .then(res => {
-          // eslint-disable-next-line prefer-destructuring
-          token = res.body.session.token;
-        })
-    )
+    // Promise.all([factory.create('user', validUser), factory.createMany('user', 15)])
+    factory
+      .create('user', validUser)
+      .then(() => factory.createMany('user', 15))
+      .then(() =>
+        request
+          .post('/users/sessions')
+          .send(validSignIn)
+          .then(res => {
+            // eslint-disable-next-line prefer-destructuring
+            token = res.body.session.token;
+          })
+      )
   );
 
   it.each([[0, 1, 1], [1, 3, 3], [3, 5, 1]])(
     'Page: %i pageSize: %i should return %i',
-    (page, pageSize, expected, done) =>
+    (page, pageSize, expected) =>
       request
         .get('/users')
         .set('Content-Type', 'application/json')
@@ -61,10 +65,9 @@ describe('Get /users', () => {
           expect(res.body).toHaveProperty('rows');
           expect(res.status).toBe(200);
           expect(res.body.rows.length).toBe(expected);
-          done();
         })
   );
-  it('Does not send page param, should return all users', done => {
+  it('Does not send page param, should return all users', () =>
     request
       .get('/users')
       .set('Content-Type', 'application/json')
@@ -77,10 +80,8 @@ describe('Get /users', () => {
         expect(res.body).toHaveProperty('rows');
         expect(res.status).toBe(200);
         expect(res.body.rows.length).toBe(16);
-        done();
-      });
-  });
-  it('Does not send any param, should return all users', done => {
+      }));
+  it('Does not send any param, should return all users', () =>
     request
       .get('/users')
       .set('Content-Type', 'application/json')
@@ -92,10 +93,8 @@ describe('Get /users', () => {
         expect(res.body).toHaveProperty('rows');
         expect(res.status).toBe(200);
         expect(res.body.rows.length).toBe(16);
-        done();
-      });
-  });
-  it('Does not send pageSize param, should return all users', done => {
+      }));
+  it('Does not send pageSize param, should return all users', () =>
     request
       .get('/users')
       .set('Content-Type', 'application/json')
@@ -108,10 +107,8 @@ describe('Get /users', () => {
         expect(res.body).toHaveProperty('rows');
         expect(res.status).toBe(200);
         expect(res.body.rows.length).toBe(16);
-        done();
-      });
-  });
-  it('Tries to get users list with invalid token', done => {
+      }));
+  it('Tries to get users list with invalid token', () =>
     request
       .get('/users')
       .set('Content-Type', 'application/json')
@@ -121,10 +118,8 @@ describe('Get /users', () => {
       .then(res => {
         expect(res.body).toHaveProperty('internal_code');
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
-        done();
-      });
-  });
-  it('Tries to get users list without token', done => {
+      }));
+  it('Tries to get users list without token', () =>
     request
       .get('/users')
       .set('Content-Type', 'application/json')
@@ -133,11 +128,9 @@ describe('Get /users', () => {
       .then(res => {
         expect(res.body).toHaveProperty('internal_code');
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
-        done();
-      });
-  });
+      }));
 
-  it('Sends param PAGE with negative value', done => {
+  it('Sends param PAGE with negative value', () =>
     request
       .get('/users')
       .set('Content-Type', 'application/json')
@@ -148,11 +141,9 @@ describe('Get /users', () => {
       .then(res => {
         expect(res.body.message[0].message).toBe(paramsValidationsErrors.invalidPageParam);
         expect(res.body.internal_code).toBe(errors.VALIDATION_ERROR);
-        done();
-      });
-  });
+      }));
 
-  it('Sends param PAGESIZE with negative value', done => {
+  it('Sends param PAGESIZE with negative value', () =>
     request
       .get('/users')
       .set('Content-Type', 'application/json')
@@ -163,7 +154,5 @@ describe('Get /users', () => {
       .then(res => {
         expect(res.body.message[0].message).toBe(paramsValidationsErrors.invalidPageSizeParam);
         expect(res.body.internal_code).toBe(errors.VALIDATION_ERROR);
-        done();
-      });
-  });
+      }));
 });

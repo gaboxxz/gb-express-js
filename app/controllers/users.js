@@ -3,7 +3,7 @@ const { serializeToken } = require('../serializers/auth');
 const { mapUserCreateRequest, mapUserSignIn } = require('../mappers/user');
 const helpers = require('../helpers');
 const logger = require('../logger');
-const userDb = require('../services/database/users');
+const userDb = require('../services/users');
 const errors = require('../errors');
 
 exports.createUser = (req, res, next) => {
