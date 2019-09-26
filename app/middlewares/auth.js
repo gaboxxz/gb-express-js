@@ -14,3 +14,14 @@ exports.authenticate = (req, res, next) => {
     next(errors.unauthorizedError());
   }
 };
+
+exports.authenticateAdmin = (req, res, next) => {
+  try {
+    const decoded = jwt.verify(req.headers.authorization, config.common.session.secret);
+    req.userId = decoded.params.id;
+    logger.info('Valid ADMIN token');
+    next();
+  } catch (err) {
+    next(errors.unauthorizedError());
+  }
+};

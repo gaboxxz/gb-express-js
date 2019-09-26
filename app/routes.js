@@ -12,4 +12,6 @@ exports.init = app => {
   app.post('/users/sessions', validateSchemaAndFail(signIn), usersController.signIn);
   app.post('/users', validateSchemaAndFail(signUp), usersController.createUser);
   app.get('/users', authenticate, validateSchemaAndFail(getUsersSchema), usersController.getUsers);
+
+  // app.get('/admin/users', authenticateAdmin, validateSchemaAndFail(), adminController.createAdmin);
 };
