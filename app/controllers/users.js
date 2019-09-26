@@ -3,9 +3,9 @@ const { serializeToken } = require('../serializers/auth');
 const { mapUserCreateRequest, mapUserSignIn } = require('../mappers/user');
 const helpers = require('../helpers');
 const logger = require('../logger');
-const userDb = require('../services/database/users');
+const userDb = require('../services/users');
 const errors = require('../errors');
-
+const db = require('../models');
 exports.createUser = (req, res, next) => {
   const newUserData = mapUserCreateRequest(req.body);
 
@@ -58,4 +58,18 @@ exports.getUsers = (req, res, next) => {
       res.send(usersList);
     })
     .catch(next);
+};
+
+exports.createAdminUser = (req, res, next) => {
+  const newUserData = mapUserCreateRequest(req.body);
+  // TODO:mapper
+  const admin = { ...newUserData, isAdmin: true };
+  try {
+    // TODO: take to service?
+    db.user.upsert(admin);
+  } catch {
+    next(errors.databaseError());
+  }
+  // TODO:response with upserted user
+  res.send('Todo ok');
 };
