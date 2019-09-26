@@ -4,6 +4,7 @@ const helpers = require('../app/helpers');
 const supertest = require('supertest');
 const { factory } = require('factory-girl');
 const errors = require('../app/errors');
+const { paramsValidationsErrors } = require('../app/constants/errorsMessages');
 const validUser = {
   firstName: 'TestName',
   lastName: 'TestLastName',
@@ -47,7 +48,7 @@ describe('Get /users', () => {
 
   it.each([[0, 1, 1], [1, 3, 3], [3, 5, 1]])(
     'Page: %i pageSize: %i should return %i',
-    (page, pageSize, expected) =>
+    (page, pageSize, expected, done) =>
       request
         .get('/users')
         .set('Content-Type', 'application/json')
@@ -60,6 +61,7 @@ describe('Get /users', () => {
           expect(res.body).toHaveProperty('rows');
           expect(res.status).toBe(200);
           expect(res.body.rows.length).toBe(expected);
+          done();
         })
   );
   it('Does not send page param, should return all users', done => {
@@ -131,6 +133,36 @@ describe('Get /users', () => {
       .then(res => {
         expect(res.body).toHaveProperty('internal_code');
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
+        done();
+      });
+  });
+
+  it('Sends param PAGE with negative value', done => {
+    request
+      .get('/users')
+      .set('Content-Type', 'application/json')
+      .set('authorization', token)
+      .set('Acccept', 'application/json')
+      .query({ page: -1 })
+      .send()
+      .then(res => {
+        expect(res.body.message[0].message).toBe(paramsValidationsErrors.invalidPageParam);
+        expect(res.body.internal_code).toBe(errors.VALIDATION_ERROR);
+        done();
+      });
+  });
+
+  it('Sends param PAGESIZE with negative value', done => {
+    request
+      .get('/users')
+      .set('Content-Type', 'application/json')
+      .set('authorization', token)
+      .set('Acccept', 'application/json')
+      .query({ pageSize: -1 })
+      .send()
+      .then(res => {
+        expect(res.body.message[0].message).toBe(paramsValidationsErrors.invalidPageSizeParam);
+        expect(res.body.internal_code).toBe(errors.VALIDATION_ERROR);
         done();
       });
   });
