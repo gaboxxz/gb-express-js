@@ -47,7 +47,7 @@ exports.signIn = (req, res, next) => {
 
 exports.getUsers = (req, res, next) => {
   const pageSize = parseInt(req.query.pageSize);
-  const offset = parseInt(req.query.page) * pageSize;
+  const offset = (parseInt(req.query.page) - 1) * pageSize;
   const limit = pageSize;
   const attributes = ['id', 'email', 'first_name', 'last_name'];
   const params =

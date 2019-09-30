@@ -35,7 +35,6 @@ const request = supertest(app);
 describe('Get /users', () => {
   let token = null;
   beforeEach(() =>
-    // Promise.all([factory.create('user', validUser), factory.createMany('user', 15)])
     factory
       .create('user', validUser)
       .then(() => factory.createMany('user', 15))
@@ -50,7 +49,7 @@ describe('Get /users', () => {
       )
   );
 
-  it.each([[0, 1, 1], [1, 3, 3], [3, 5, 1]])(
+  it.each([[1, 1, 1], [1, 3, 3], [4, 5, 1]])(
     'Page: %i pageSize: %i should return %i',
     (page, pageSize, expected) =>
       request
@@ -150,6 +149,32 @@ describe('Get /users', () => {
       .set('authorization', token)
       .set('Acccept', 'application/json')
       .query({ pageSize: -1 })
+      .send()
+      .then(res => {
+        expect(res.body.message[0].message).toBe(paramsValidationsErrors.invalidPageSizeParam);
+        expect(res.body.internal_code).toBe(errors.VALIDATION_ERROR);
+      }));
+
+  it('Sends param PAGE with zero value', () =>
+    request
+      .get('/users')
+      .set('Content-Type', 'application/json')
+      .set('authorization', token)
+      .set('Acccept', 'application/json')
+      .query({ page: 0 })
+      .send()
+      .then(res => {
+        expect(res.body.message[0].message).toBe(paramsValidationsErrors.invalidPageParam);
+        expect(res.body.internal_code).toBe(errors.VALIDATION_ERROR);
+      }));
+
+  it('Sends param PAGESIZE with zerp value', () =>
+    request
+      .get('/users')
+      .set('Content-Type', 'application/json')
+      .set('authorization', token)
+      .set('Acccept', 'application/json')
+      .query({ pageSize: 0 })
       .send()
       .then(res => {
         expect(res.body.message[0].message).toBe(paramsValidationsErrors.invalidPageSizeParam);
