@@ -43,10 +43,11 @@ describe('Get /users', () => {
         request
           .post('/users/sessions')
           .send(validSignIn)
-          .then(res => {
-            // eslint-disable-next-line prefer-destructuring
-            token = res.body.session.token;
-          })
+          .then(
+            res =>
+              // eslint-disable-next-line prefer-destructuring
+              (token = res.body.session.token)
+          )
       )
   );
 
@@ -56,7 +57,7 @@ describe('Get /users', () => {
       request
         .get('/users')
         .set('Content-Type', 'application/json')
-        .set('Acccept', 'application/json')
+        .set('Accept', 'application/json')
         .set('authorization', token)
         .query({ pageSize, page })
         .send()
@@ -71,7 +72,7 @@ describe('Get /users', () => {
     request
       .get('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .set('authorization', token)
       .query({ pageSize: 1 })
       .send()
@@ -85,7 +86,7 @@ describe('Get /users', () => {
     request
       .get('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .set('authorization', token)
       .send()
       .then(res => {
@@ -98,7 +99,7 @@ describe('Get /users', () => {
     request
       .get('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .set('authorization', token)
       .query({ page: 1 })
       .send()
@@ -112,7 +113,7 @@ describe('Get /users', () => {
     request
       .get('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .set('authorization', '000000000FFFFFFFFFFFFF&&//%$')
       .send()
       .then(res => {
@@ -123,7 +124,7 @@ describe('Get /users', () => {
     request
       .get('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .send()
       .then(res => {
         expect(res.body).toHaveProperty('internal_code');
@@ -135,7 +136,7 @@ describe('Get /users', () => {
       .get('/users')
       .set('Content-Type', 'application/json')
       .set('authorization', token)
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .query({ page: -1 })
       .send()
       .then(res => {
@@ -148,7 +149,7 @@ describe('Get /users', () => {
       .get('/users')
       .set('Content-Type', 'application/json')
       .set('authorization', token)
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .query({ pageSize: -1 })
       .send()
       .then(res => {

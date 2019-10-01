@@ -11,4 +11,6 @@ module.exports = {
     invalidPageParam: 'Invalid param PAGE. Must be integer greater or equal to 0',
     invalidPageSizeParam: 'Invalid param PAGESIZE. Must be integer greater or equal to 0'
   }
+  },
+  notadminUser: 'User is not admin'
 };

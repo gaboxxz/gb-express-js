@@ -1,6 +1,5 @@
-// const db = require('../models');
-// const logger = require('../logger');
 const errors = require('../errors');
+const errorMessages = require('../constants/errorsMessages');
 const jwt = require('jsonwebtoken');
 const logger = require('../logger');
 const config = require('../../config');
