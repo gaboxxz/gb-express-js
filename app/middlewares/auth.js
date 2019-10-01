@@ -1,6 +1,5 @@
-// const db = require('../models');
-// const logger = require('../logger');
 const errors = require('../errors');
+const errorMessages = require('../constants/errorsMessages');
 const jwt = require('jsonwebtoken');
 const logger = require('../logger');
 const config = require('../../config');
@@ -16,11 +15,9 @@ exports.authenticate = (req, res, next) => {
   }
 };
 
-exports.authenticateAdmin = (req, res, next) => {
-  // TODO: See if ok calling here db or shold use service
+exports.authenticateAdmin = (req, res, next) =>
   db.user
     .findOne({ where: { id: req.userId } })
     .then(user => (req.user = user))
-    .then(() => (req.user.isAdmin ? next() : next(errors.unauthorizedError('Not admin'))))
+    .then(() => (req.user.isAdmin ? next() : next(errors.unauthorizedError(errorMessages.notadminUser))))
     .catch(err => next(errors.databaseError(err)));
-};

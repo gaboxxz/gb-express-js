@@ -17,7 +17,7 @@ describe('Post /users', () => {
     const response = await request
       .post('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .send(validUser);
     expect(response.status).toBe(201);
     expect(response.body).not.toBe({});
@@ -33,7 +33,7 @@ describe('Post /users', () => {
     const response = await request
       .post('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .send(invalidUser);
     expect(response.status).toBe(400);
     expect(response.body.message.length).toBe(1);
@@ -47,7 +47,7 @@ describe('Post /users', () => {
     const response = await request
       .post('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .send({ ...validUser, password: '1234567' });
     expect(response.status).toBe(400);
     expect(response.body.message.length).toBe(1);
@@ -60,12 +60,12 @@ describe('Post /users', () => {
     await request
       .post('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .send(validUser);
     const response = await request
       .post('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .send(validUser);
     expect(response.status).toBe(400);
     expect(response.body.internal_code).toBe(errors.EMAIL_REGISTERED_ERROR);
