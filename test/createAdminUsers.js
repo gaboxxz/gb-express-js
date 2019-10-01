@@ -1,14 +1,24 @@
 const app = require('../server');
+<<<<<<< HEAD
 const supertest = require('supertest');
 const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const errorMessages = require('../app/constants/errorsMessages');
+=======
+// const { user } = require('../app/models');
+// const helpers = require('../app/helpers');
+const supertest = require('supertest');
+const { factory } = require('factory-girl');
+// const errors = require('../app/errors');
+// const { paramsValidationsErrors } = require('../app/constants/errorsMessages');
+>>>>>>> Admin user support.
 const validUser = {
   first_name: 'TestName',
   last_name: 'TestLastName',
   password: '12345678Ab',
   email: 'Test@wolox.com'
 };
+<<<<<<< HEAD
 
 const validUserNotAdmin = {
   first_name: 'UserNotAdmin',
@@ -18,6 +28,28 @@ const validUserNotAdmin = {
 };
 const validSignIn = { email: 'Test@wolox.com', password: '12345678Ab' };
 
+=======
+const validSignIn = { email: 'Test@wolox.com', password: '12345678Ab' };
+
+// factory.define(
+//   'user',
+//   user,
+//   {
+//     firstName: factory.chance('name', { middle: true }),
+//     lastName: factory.chance('name', { middle: true }),
+//     email: factory.chance('email', { domain: 'wolox.com' }),
+//     password: factory.chance('string', { length: 8 }),
+//     isAdmin: Boolean
+//   },
+//   {
+//     afterBuild: model => {
+//       model.password = helpers.hashPassword(model.password);
+//       return model;
+//     }
+//   }
+// );
+
+>>>>>>> Admin user support.
 const request = supertest(app);
 
 describe('Post admin/users', () => {
