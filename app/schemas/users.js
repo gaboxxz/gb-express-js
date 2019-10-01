@@ -57,3 +57,24 @@ exports.signIn = {
     exists: true
   }
 };
+
+exports.getUsersSchema = {
+  page: {
+    in: ['query'],
+    optional: true,
+    isNumeric: true,
+    custom: {
+      options: number => number >= 1
+    },
+    errorMessage: paramsValidationsErrors.invalidPageParam
+  },
+  pageSize: {
+    in: ['query'],
+    optional: true,
+    isNumeric: true,
+    custom: {
+      options: number => number >= 1
+    },
+    errorMessage: paramsValidationsErrors.invalidPageSizeParam
+  }
+};

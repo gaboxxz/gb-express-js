@@ -1,9 +1,11 @@
 const { serializeCreatedUser } = require('../serializers/users');
+const { serializeToken } = require('../serializers/auth');
 const { mapUserCreateRequest, mapUserSignIn } = require('../mappers/user');
 const helpers = require('../helpers');
 const logger = require('../logger');
-const userDb = require('../services/database/users');
+const userDb = require('../services/users');
 const errors = require('../errors');
+const constants = require('../constants');
 
 exports.createUser = (req, res, next) => {
   const newUserData = mapUserCreateRequest(req.body);
@@ -35,11 +37,27 @@ exports.signIn = (req, res, next) => {
       if (helpers.passwordChecks(userToSignIn.password, user.password)) {
         logger.info(`User ${user.firstName} logged with correct password.`);
         const token = helpers.createToken({ id: user.id });
-        const serializedToken = { session: { auth: true, token } };
+        const serializedToken = serializeToken(token);
         return res.status(200).send(serializedToken);
       }
       logger.info('Invalid password');
       throw errors.unauthorizedError();
+    })
+    .catch(next);
+};
+
+exports.getUsers = (req, res, next) => {
+  const limit = parseInt(req.query.pageSize);
+  const offset = (parseInt(req.query.page) - 1) * limit;
+  const attributes = ['id', 'email', 'first_name', 'last_name'];
+  const params =
+    limit > 0 && offset >= 0
+      ? { attributes, limit, offset, order: ['id'] }
+      : { attributes, limit: constants.DEFAULT_LIMIT, offset: constants.DEFAULT_OFFSET, order: ['id'] };
+  userDb
+    .findAndCountAllUsersPaginated(params)
+    .then(usersList => {
+      res.send(usersList);
     })
     .catch(next);
 };
