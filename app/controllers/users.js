@@ -5,8 +5,7 @@ const helpers = require('../helpers');
 const logger = require('../logger');
 const userDb = require('../services/users');
 const errors = require('../errors');
-const constants = require('../constants');
-
+const db = require('../models');
 exports.createUser = (req, res, next) => {
   const newUserData = mapUserCreateRequest(req.body);
 
@@ -47,17 +46,25 @@ exports.signIn = (req, res, next) => {
 };
 
 exports.getUsers = (req, res, next) => {
-  const limit = parseInt(req.query.pageSize);
-  const offset = (parseInt(req.query.page) - 1) * limit;
-  const attributes = ['id', 'email', 'first_name', 'last_name'];
+  const pageSize = parseInt(req.query.pageSize);
+  const offset = parseInt(req.query.page) * pageSize;
+  const limit = pageSize;
+  const attributes = ['id', 'email', 'first_name', 'last_name', 'is_admin'];
   const params =
-    limit > 0 && offset >= 0
-      ? { attributes, limit, offset, order: ['id'] }
-      : { attributes, limit: constants.DEFAULT_LIMIT, offset: constants.DEFAULT_OFFSET, order: ['id'] };
+    limit && offset >= 0 ? { attributes, limit, offset, order: ['id'] } : { attributes, order: ['id'] };
   userDb
     .findAndCountAllUsersPaginated(params)
     .then(usersList => {
       res.send(usersList);
     })
+    .catch(next);
+};
+
+exports.createAdminUser = (req, res, next) => {
+  const newUserData = mapUserCreateRequest(req.body);
+  const admin = { ...newUserData, isAdmin: true };
+  db.user
+    .upsert(admin, { returning: true })
+    .then(admUser => res.send(serializeCreatedUser(admUser[0])))
     .catch(next);
 };
