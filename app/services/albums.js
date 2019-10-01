@@ -1,8 +1,12 @@
 const errors = require('../errors');
 const rp = require('request-promise');
 
-exports.getAlbums = () =>
-  rp(`${process.env.ALBUMS_URL}albums`).catch(err => {
+exports.getAlbums = queryParams =>
+  rp({
+    uri: `${process.env.ALBUMS_URL}albums`,
+    qs: queryParams,
+    method: 'Get'
+  }).catch(err => {
     throw errors.externalApiError(err.message);
   });
 
