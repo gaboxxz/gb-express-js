@@ -64,7 +64,7 @@ exports.getUsersSchema = {
     optional: true,
     isNumeric: true,
     custom: {
-      options: number => number >= 1
+      options: number => number >= 0
     },
     errorMessage: paramsValidationsErrors.invalidPageParam
   },
@@ -73,7 +73,7 @@ exports.getUsersSchema = {
     optional: true,
     isNumeric: true,
     custom: {
-      options: number => number >= 1
+      options: number => number >= 0
     },
     errorMessage: paramsValidationsErrors.invalidPageSizeParam
   }

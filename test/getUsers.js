@@ -5,7 +5,6 @@ const supertest = require('supertest');
 const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const { paramsValidationsErrors } = require('../app/constants/errorsMessages');
-const constants = require('../app/constants');
 const validUser = {
   firstName: 'TestName',
   lastName: 'TestLastName',
@@ -36,6 +35,7 @@ const request = supertest(app);
 describe('Get /users', () => {
   let token = null;
   beforeEach(() =>
+    // Promise.all([factory.create('user', validUser), factory.createMany('user', 15)])
     factory
       .create('user', validUser)
       .then(() => factory.createMany('user', 15))
@@ -43,20 +43,21 @@ describe('Get /users', () => {
         request
           .post('/users/sessions')
           .send(validSignIn)
-          .then(res => {
-            // eslint-disable-next-line prefer-destructuring
-            token = res.body.session.token;
-          })
+          .then(
+            res =>
+              // eslint-disable-next-line prefer-destructuring
+              (token = res.body.session.token)
+          )
       )
   );
 
-  it.each([[1, 1, 1], [1, 3, 3], [4, 5, 1]])(
+  it.each([[0, 1, 1], [1, 3, 3], [3, 5, 1]])(
     'Page: %i pageSize: %i should return %i',
     (page, pageSize, expected) =>
       request
         .get('/users')
         .set('Content-Type', 'application/json')
-        .set('Acccept', 'application/json')
+        .set('Accept', 'application/json')
         .set('authorization', token)
         .query({ pageSize, page })
         .send()
@@ -67,11 +68,11 @@ describe('Get /users', () => {
           expect(res.body.rows.length).toBe(expected);
         })
   );
-  it('Does not send page param, should return default limits', () =>
+  it('Does not send page param, should return all users', () =>
     request
       .get('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .set('authorization', token)
       .query({ pageSize: 1 })
       .send()
@@ -79,26 +80,26 @@ describe('Get /users', () => {
         expect(res.body).toHaveProperty('count');
         expect(res.body).toHaveProperty('rows');
         expect(res.status).toBe(200);
-        expect(res.body.rows.length).toBe(constants.DEFAULT_LIMIT);
+        expect(res.body.rows.length).toBe(16);
       }));
-  it('Does not send any param, should return default limits', () =>
+  it('Does not send any param, should return all users', () =>
     request
       .get('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .set('authorization', token)
       .send()
       .then(res => {
         expect(res.body).toHaveProperty('count');
         expect(res.body).toHaveProperty('rows');
         expect(res.status).toBe(200);
-        expect(res.body.rows.length).toBe(constants.DEFAULT_LIMIT);
+        expect(res.body.rows.length).toBe(16);
       }));
-  it('Does not send pageSize param, should return default limit', () =>
+  it('Does not send pageSize param, should return all users', () =>
     request
       .get('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .set('authorization', token)
       .query({ page: 1 })
       .send()
@@ -106,13 +107,13 @@ describe('Get /users', () => {
         expect(res.body).toHaveProperty('count');
         expect(res.body).toHaveProperty('rows');
         expect(res.status).toBe(200);
-        expect(res.body.rows.length).toBe(constants.DEFAULT_LIMIT);
+        expect(res.body.rows.length).toBe(16);
       }));
   it('Tries to get users list with invalid token', () =>
     request
       .get('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .set('authorization', '000000000FFFFFFFFFFFFF&&//%$')
       .send()
       .then(res => {
@@ -123,7 +124,7 @@ describe('Get /users', () => {
     request
       .get('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .send()
       .then(res => {
         expect(res.body).toHaveProperty('internal_code');
@@ -135,7 +136,7 @@ describe('Get /users', () => {
       .get('/users')
       .set('Content-Type', 'application/json')
       .set('authorization', token)
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .query({ page: -1 })
       .send()
       .then(res => {
@@ -148,34 +149,8 @@ describe('Get /users', () => {
       .get('/users')
       .set('Content-Type', 'application/json')
       .set('authorization', token)
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .query({ pageSize: -1 })
-      .send()
-      .then(res => {
-        expect(res.body.message[0].message).toBe(paramsValidationsErrors.invalidPageSizeParam);
-        expect(res.body.internal_code).toBe(errors.VALIDATION_ERROR);
-      }));
-
-  it('Sends param PAGE with zero value', () =>
-    request
-      .get('/users')
-      .set('Content-Type', 'application/json')
-      .set('authorization', token)
-      .set('Acccept', 'application/json')
-      .query({ page: 0 })
-      .send()
-      .then(res => {
-        expect(res.body.message[0].message).toBe(paramsValidationsErrors.invalidPageParam);
-        expect(res.body.internal_code).toBe(errors.VALIDATION_ERROR);
-      }));
-
-  it('Sends param PAGESIZE with zerp value', () =>
-    request
-      .get('/users')
-      .set('Content-Type', 'application/json')
-      .set('authorization', token)
-      .set('Acccept', 'application/json')
-      .query({ pageSize: 0 })
       .send()
       .then(res => {
         expect(res.body.message[0].message).toBe(paramsValidationsErrors.invalidPageSizeParam);
