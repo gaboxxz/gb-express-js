@@ -1,9 +1,9 @@
 const albums = require('../services/albums');
 const logger = require('../../app/logger');
 const errors = require('../errors');
-exports.getAlbums = (_, res, next) =>
+exports.getAlbums = (req, res, next) =>
   albums
-    .getAlbums()
+    .getAlbums(req.query)
     .then(json => {
       logger.info('Albums were fetched from external api');
       res.status(200).send(JSON.parse(json));
@@ -15,7 +15,7 @@ exports.getAlbums = (_, res, next) =>
 
 exports.getPhotosByAlbumId = (req, res, next) => {
   albums
-    .getIdAlbumPhotos(req.params.id)
+    .getIdAlbumPhotos(req.params)
     .then(response => {
       const albumsById = JSON.parse(response);
       if (albumsById && albumsById.length) {
@@ -31,3 +31,31 @@ exports.getPhotosByAlbumId = (req, res, next) => {
       return next(err);
     });
 };
+
+exports.buyAlbum = (req, res, next) => {
+  logger.info(JSON.stringify(req.params));
+  albums
+    .getAlbums(req.params)
+    .then(response => {
+      const album = JSON.parse(response);
+      console.log(album.length);
+      if (album.length === 0) {
+        // TODO: add new error message constant
+        throw errors.notFoundError('Album not found');
+      } else {
+        return album;
+      }
+    })
+    .then(album => {
+      if (userHasAlbum(user, album)) {
+        // TODO: agregaar otro error posta
+        throw errors.unauthorizedError('el usuario ya tiene el album');
+      } else {
+        userBuyAlbum(user, album);
+      }
+    })
+    .catch(next);
+};
+// Preguntas: saco toda la logica de compra de albunes a un interactor? . Como hago la relacion de la tabla de albunes por usuario con usuario en el modelo
+// y en la migracion?
+

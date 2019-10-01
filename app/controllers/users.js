@@ -5,9 +5,13 @@ const helpers = require('../helpers');
 const logger = require('../logger');
 const userDb = require('../services/users');
 const errors = require('../errors');
+<<<<<<< HEAD
 const db = require('../models');
 const constants = require('../constants');
 const { roles } = require('../constants/roles');
+=======
+const constants = require('../constants');
+>>>>>>> Users list (#12)
 
 exports.createUser = (req, res, next) => {
   const newUserData = mapUserCreateRequest(req.body);
