@@ -6,6 +6,7 @@ const logger = require('../logger');
 const userDb = require('../services/users');
 const errors = require('../errors');
 const db = require('../models');
+const constants = require('../constants');
 exports.createUser = (req, res, next) => {
   const newUserData = mapUserCreateRequest(req.body);
 
@@ -46,12 +47,13 @@ exports.signIn = (req, res, next) => {
 };
 
 exports.getUsers = (req, res, next) => {
-  const pageSize = parseInt(req.query.pageSize);
-  const offset = parseInt(req.query.page) * pageSize;
-  const limit = pageSize;
+  const limit = parseInt(req.query.pageSize);
+  const offset = (parseInt(req.query.page) - 1) * limit;
   const attributes = ['id', 'email', 'first_name', 'last_name', 'is_admin'];
   const params =
-    limit && offset >= 0 ? { attributes, limit, offset, order: ['id'] } : { attributes, order: ['id'] };
+    limit > 0 && offset >= 0
+      ? { attributes, limit, offset, order: ['id'] }
+      : { attributes, limit: constants.DEFAULT_LIMIT, offset: constants.DEFAULT_OFFSET, order: ['id'] };
   userDb
     .findAndCountAllUsersPaginated(params)
     .then(usersList => {
