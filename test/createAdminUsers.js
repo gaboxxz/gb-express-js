@@ -110,7 +110,7 @@ describe('Post admin/users', () => {
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
       }));
 
-  it.only('Tries to create new valid Admin user with user that is not admin', () => {
+  it('Tries to create new valid Admin user with user that is not admin', () => {
     let tokenTest = null;
 
     return factory
