@@ -1,10 +1,8 @@
 const app = require('../server');
-// const { user } = require('../app/models');
-// const helpers = require('../app/helpers');
 const supertest = require('supertest');
 const { factory } = require('factory-girl');
-// const errors = require('../app/errors');
-// const { paramsValidationsErrors } = require('../app/constants/errorsMessages');
+const errors = require('../app/errors');
+const errorMessages = require('../app/constants/errorsMessages');
 const validUser = {
   first_name: 'TestName',
   last_name: 'TestLastName',
@@ -112,7 +110,7 @@ describe('Post admin/users', () => {
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
       }));
 
-  it.only('Tries to create new valid Admin user with user that is not admin', () => {
+  it('Tries to create new valid Admin user with user that is not admin', () => {
     let tokenTest = null;
 
     return factory
