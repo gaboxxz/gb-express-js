@@ -8,8 +8,8 @@ module.exports = {
     passwordIsNotAlphanumeric: 'Password must be alphanumeric.',
     firstNameLengthError: `Field first_name must be at least ${constants.MIN_LAST_NAME_LENGTH} characters long and less than ${constants.MAX_FIRST_NAME_LENGTH}.`,
     lastNameLengthError: `Field last_name must be at least ${constants.MIN_LAST_NAME_LENGTH} characters long and less than ${constants.MAX_LAST_NAME_LENGTH}.`,
-    invalidPageParam: 'Invalid param "PAGE". Must be integer greater or equal to 0',
-    invalidPageSizeParam: 'Invalid param "PAGESIZE". Must be integer greater or equal to 0'
+    invalidPageParam: 'Invalid param "PAGE". Must be integer greater than 0',
+    invalidPageSizeParam: 'Invalid param "PAGESIZE". Must be integer greater than 0'
   },
   notadminUser: 'User is not admin'
 };
