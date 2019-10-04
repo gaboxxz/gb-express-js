@@ -7,6 +7,8 @@ const userDb = require('../services/users');
 const errors = require('../errors');
 const db = require('../models');
 const constants = require('../constants');
+const { roles } = require('../constants/roles');
+
 exports.createUser = (req, res, next) => {
   const newUserData = mapUserCreateRequest(req.body);
 
@@ -49,7 +51,7 @@ exports.signIn = (req, res, next) => {
 exports.getUsers = (req, res, next) => {
   const limit = parseInt(req.query.pageSize);
   const offset = (parseInt(req.query.page) - 1) * limit;
-  const attributes = ['id', 'email', 'first_name', 'last_name', 'is_admin'];
+  const attributes = ['id', 'email', 'first_name', 'last_name', 'role'];
   const params =
     limit > 0 && offset >= 0
       ? { attributes, limit, offset, order: ['id'] }
@@ -64,7 +66,7 @@ exports.getUsers = (req, res, next) => {
 
 exports.createAdminUser = (req, res, next) => {
   const newUserData = mapUserCreateRequest(req.body);
-  const admin = { ...newUserData, isAdmin: true };
+  const admin = { ...newUserData, role: roles.admin };
   db.user
     .upsert(admin, { returning: true })
     .then(admUser => res.send(serializeCreatedUser(admUser[0])))

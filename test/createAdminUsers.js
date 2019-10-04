@@ -3,6 +3,7 @@ const supertest = require('supertest');
 const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const errorMessages = require('../app/constants/errorsMessages');
+const { roles } = require('../app/constants/roles');
 const validUser = {
   first_name: 'TestName',
   last_name: 'TestLastName',
@@ -22,6 +23,7 @@ const request = supertest(app);
 
 describe('Post admin/users', () => {
   let token = null;
+  let usersNotAdminCreated = null;
   beforeEach(() =>
     factory
       .create('user', {
@@ -29,18 +31,20 @@ describe('Post admin/users', () => {
         lastName: validUser.last_name,
         email: validUser.email,
         password: validUser.password,
-        isAdmin: true
+        role: roles.admin
       })
       .then(() => factory.createMany('user', 5))
-      .then(() =>
-        request
+      .then(users => {
+        usersNotAdminCreated = users;
+        return request
           .post('/users/sessions')
           .send(validSignIn)
           .then(res => {
             // eslint-disable-next-line prefer-destructuring
             token = res.body.session.token;
-          })
-      )
+            Promise.resolve();
+          });
+      })
   );
 
   it('Creates new valid Admin user', () =>
@@ -49,7 +53,6 @@ describe('Post admin/users', () => {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set('authorization', token)
-      // eslint-disable-next-line no-extra-parens
       .send({ ...validUser, email: 'TestAdmin1@wolox.com.ar' })
       .then(res => {
         expect(res.status).toBe(200);
@@ -58,43 +61,39 @@ describe('Post admin/users', () => {
         expect(res.body.user).toHaveProperty('first_name');
         expect(res.body.user).toHaveProperty('last_name');
         expect(res.body.user).toHaveProperty('email');
-        expect(res.body.user).toHaveProperty('is_admin');
+        expect(res.body.user).toHaveProperty('role');
         expect(res.body.user.first_name).toBe(validUser.first_name);
         expect(res.body.user.last_name).toBe(validUser.last_name);
         expect(res.body.user.email).toBe('TestAdmin1@wolox.com.ar');
-        expect(res.body.user.is_admin).toBe(true);
+        expect(res.body.user.role).toBe(roles.admin);
       }));
 
-  it('Creates new Admin of existent user not admin', () =>
-    factory
-      .create('user', {
-        firstName: validUserNotAdmin.first_name,
-        lastName: validUserNotAdmin.last_name,
-        email: validUserNotAdmin.email,
-        password: validUserNotAdmin.password,
-        isAdmin: false
+  it('Creates new Admin of existent user not admin', done =>
+    request
+      .post('/admin/users')
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .set('authorization', token)
+      .send({
+        first_name: usersNotAdminCreated[0].firstName,
+        last_name: usersNotAdminCreated[0].lastName,
+        email: usersNotAdminCreated[0].email,
+        password: 'Password1234'
       })
-      .then(() =>
-        request
-          .post('/admin/users')
-          .set('Content-Type', 'application/json')
-          .set('Accept', 'application/json')
-          .set('authorization', token)
-          .send(validUserNotAdmin)
-          .then(res => {
-            expect(res.status).toBe(200);
-            expect(res.body).toHaveProperty('user');
-            expect(res.body.user).toHaveProperty('id');
-            expect(res.body.user).toHaveProperty('first_name');
-            expect(res.body.user).toHaveProperty('last_name');
-            expect(res.body.user).toHaveProperty('email');
-            expect(res.body.user).toHaveProperty('is_admin');
-            expect(res.body.user.first_name).toBe(validUserNotAdmin.first_name);
-            expect(res.body.user.last_name).toBe(validUserNotAdmin.last_name);
-            expect(res.body.user.email).toBe(validUserNotAdmin.email);
-            expect(res.body.user.is_admin).toBe(true);
-          })
-      ));
+      .then(res => {
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('user');
+        expect(res.body.user).toHaveProperty('id');
+        expect(res.body.user).toHaveProperty('first_name');
+        expect(res.body.user).toHaveProperty('last_name');
+        expect(res.body.user).toHaveProperty('email');
+        expect(res.body.user).toHaveProperty('role');
+        expect(res.body.user.first_name).toBe(usersNotAdminCreated[0].firstName);
+        expect(res.body.user.last_name).toBe(usersNotAdminCreated[0].lastName);
+        expect(res.body.user.email).toBe(usersNotAdminCreated[0].email);
+        expect(res.body.user.role).toBe(roles.admin);
+        done();
+      }));
 
   it('Tries to create new valid Admin user with invalid token', () =>
     request
@@ -102,7 +101,6 @@ describe('Post admin/users', () => {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set('authorization', '/&%/%&/%&&&%00000FFFFFFFf')
-      // eslint-disable-next-line no-extra-parens
       .send({ ...validUser, email: 'TestAdmin1@wolox.com.ar' })
       .then(res => {
         expect(res.status).toBe(401);
@@ -118,8 +116,7 @@ describe('Post admin/users', () => {
         firstName: validUserNotAdmin.first_name,
         lastName: validUserNotAdmin.last_name,
         email: validUserNotAdmin.email,
-        password: validUserNotAdmin.password,
-        isAdmin: false
+        password: validUserNotAdmin.password
       })
       .then(() =>
         request
@@ -135,7 +132,6 @@ describe('Post admin/users', () => {
           .set('Content-Type', 'application/json')
           .set('Accept', 'application/json')
           .set('authorization', tokenTest)
-          // eslint-disable-next-line no-extra-parens
           .send({ ...validUser, email: 'TestAdmin12@wolox.com.ar' })
       )
       .then(res => {
