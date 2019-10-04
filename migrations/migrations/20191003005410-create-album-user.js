@@ -24,6 +24,11 @@ module.exports = {
           notEmpty: true,
           type: Sequelize.INTEGER
         },
+        album_title: {
+          allowNull: false,
+          notEmpty: true,
+          type: Sequelize.STRING
+        },
         created_at: {
           allowNull: false,
           type: Sequelize.DATE

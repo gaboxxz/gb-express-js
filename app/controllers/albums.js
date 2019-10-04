@@ -1,6 +1,7 @@
 const albums = require('../services/albums');
 const logger = require('../../app/logger');
 const errors = require('../errors');
+const albumInteractor = require('../interactors/albums');
 exports.getAlbums = (req, res, next) =>
   albums
     .getAlbums(req.query)
@@ -32,30 +33,8 @@ exports.getPhotosByAlbumId = (req, res, next) => {
     });
 };
 
-exports.buyAlbum = (req, res, next) => {
-  logger.info(JSON.stringify(req.params));
-  albums
-    .getAlbums(req.params)
-    .then(response => {
-      const album = JSON.parse(response);
-      console.log(album.length);
-      if (album.length === 0) {
-        // TODO: add new error message constant
-        throw errors.notFoundError('Album not found');
-      } else {
-        return album;
-      }
-    })
-    .then(album => {
-      if (userHasAlbum(user, album)) {
-        // TODO: agregaar otro error posta
-        throw errors.unauthorizedError('el usuario ya tiene el album');
-      } else {
-        userBuyAlbum(user, album);
-      }
-    })
+exports.buyAlbum = (req, res, next) =>
+  albumInteractor
+    .userBuysAlbum(req.params.id, req.user.id)
+    .then(jj => res.send(jj))
     .catch(next);
-};
-// Preguntas: saco toda la logica de compra de albunes a un interactor? . Como hago la relacion de la tabla de albunes por usuario con usuario en el modelo
-// y en la migracion?
-

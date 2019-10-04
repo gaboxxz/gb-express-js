@@ -13,5 +13,8 @@ module.exports = {
   },
   notadminUser: 'User is not admin',
   invalidToken: 'Invalid Token',
-  userNotFound: 'User was not found'
+  userNotFound: 'User was not found',
+  albumNotFound: 'Album not found',
+  moreThanOneAlbumFound: 'More than one album found',
+  userAlreadyHasAlbum: 'User already has album'
 };
