@@ -21,9 +21,8 @@ exports.authenticate = (req, res, next) => {
       if (!user) {
         next(errors.unauthorizedError(errorMessages.userNotFound));
       }
-      req.userId = user.id;
-      req.userEmail = user.email;
-      req.userRole = user.role;
+      // TODO: change to req.user = user
+      req.user = user;
       logger.info(`User ${user.firstName} logged`);
       next();
     })
@@ -31,7 +30,7 @@ exports.authenticate = (req, res, next) => {
 };
 
 exports.authenticateAdmin = (req, res, next) => {
-  if (req.userRole !== roles.admin) {
+  if (req.user.role !== roles.admin) {
     return next(errors.unauthorizedError(errorMessages.notadminUser));
   }
   logger.info('User logged is admin');
