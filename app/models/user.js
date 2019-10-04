@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       lastName: { type: DataTypes.STRING, allowNull: false, field: 'last_name' },
       password: { type: DataTypes.STRING, allowNull: false },
       email: { type: DataTypes.STRING, allowNull: false, unique: true },
-      role: { type: DataTypes.BOOLEAN, field: 'role', defaultValue: '' }
+      role: { type: DataTypes.STRING, field: 'role', defaultValue: '' }
     },
     { underscored: true }
   );
