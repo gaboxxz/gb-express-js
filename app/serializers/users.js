@@ -5,7 +5,7 @@ exports.serializeCreatedUser = createdUser => {
       first_name: createdUser.dataValues.firstName,
       last_name: createdUser.dataValues.lastName,
       email: createdUser.dataValues.email,
-      is_admin: createdUser.isAdmin
+      role: createdUser.role
     }
   };
   return serializedUser;
