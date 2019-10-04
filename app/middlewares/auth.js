@@ -5,19 +5,35 @@ const logger = require('../logger');
 const config = require('../../config');
 const db = require('../models');
 exports.authenticate = (req, res, next) => {
+  let decoded = null;
   try {
-    const decoded = jwt.verify(req.headers.authorization, config.common.session.secret);
-    req.userId = decoded.params.id;
-    logger.info('Valid token');
-    next();
+    decoded = jwt.verify(req.headers.authorization, config.common.session.secret);
   } catch (err) {
-    next(errors.unauthorizedError());
+    // TODO: messaage
+    return next(errors.unauthorizedError('Invalid token'));
   }
+  return db.user
+    .findOne({ where: { id: decoded.params.id } })
+    .catch(err => {
+      throw errors.databaseError(err.message);
+    })
+    .then(user => {
+      if (!user) {
+        next(errors.unauthorizedError('User was not found on database'));
+      }
+      req.userId = user.id;
+      req.userEmail = user.email;
+      req.userIsAdmin = user.isAdmin;
+      logger.info(`User ${user.firstName} logged`);
+      next();
+    })
+    .catch(next);
 };
 
-exports.authenticateAdmin = (req, res, next) =>
-  db.user
-    .findOne({ where: { id: req.userId } })
-    .then(user => (req.user = user))
-    .then(() => (req.user.isAdmin ? next() : next(errors.unauthorizedError(errorMessages.notadminUser))))
-    .catch(err => next(errors.databaseError(err)));
+exports.authenticateAdmin = (req, res, next) => {
+  if (!req.userIsAdmin) {
+    return next(errors.unauthorizedError(errorMessages.notadminUser));
+  }
+  logger.info('User logged is admin');
+  return next();
+};
