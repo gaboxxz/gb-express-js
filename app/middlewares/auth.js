@@ -21,8 +21,8 @@ exports.authenticate = (req, res, next) => {
       if (!user) {
         next(errors.unauthorizedError(errorMessages.userNotFound));
       }
-      req.user = user;
-      logger.info(`User ${user.firstName} logged`);
+      req.user = { firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role };
+      logger.info(`User ${user.email} logged`);
       next();
     })
     .catch(next);

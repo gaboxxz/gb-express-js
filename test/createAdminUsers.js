@@ -23,7 +23,7 @@ const request = supertest(app);
 describe('Post admin/users', () => {
   let token = null;
   let usersNotAdminCreated = null;
-  beforeEach(() =>
+  beforeEach(done =>
     factory
       .create('user', {
         firstName: validUser.first_name,
@@ -41,7 +41,7 @@ describe('Post admin/users', () => {
           .then(res => {
             // eslint-disable-next-line prefer-destructuring
             token = res.body.session.token;
-            Promise.resolve();
+            done();
           });
       })
   );
