@@ -18,7 +18,7 @@ describe('Post /users/sessions', () => {
     await request
       .post('/users')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .send(validUser);
   });
 
@@ -26,7 +26,7 @@ describe('Post /users/sessions', () => {
     const response = await request
       .post('/users/sessions')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .send(validSignIn);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('session');
@@ -41,7 +41,7 @@ describe('Post /users/sessions', () => {
     const response = await request
       .post('/users/sessions')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .send({
         ...validSignIn,
         email: 'notRegisteredEmail@wolox.com'
@@ -56,7 +56,7 @@ describe('Post /users/sessions', () => {
     const response = await request
       .post('/users/sessions')
       .set('Content-Type', 'application/json')
-      .set('Acccept', 'application/json')
+      .set('Accept', 'application/json')
       .send({
         ...validSignIn,
         password: '000000ffffff'

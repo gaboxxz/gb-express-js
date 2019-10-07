@@ -1,16 +1,37 @@
-// const db = require('../models');
-// const logger = require('../logger');
 const errors = require('../errors');
+const errorMessages = require('../constants/errorsMessages');
 const jwt = require('jsonwebtoken');
 const logger = require('../logger');
 const config = require('../../config');
+const db = require('../models');
+const { roles } = require('../constants/roles');
 exports.authenticate = (req, res, next) => {
+  let decoded = null;
   try {
-    const decoded = jwt.verify(req.headers.authorization, config.common.session.secret);
-    req.userId = decoded.params.id;
-    logger.info('Valid token');
-    next();
+    decoded = jwt.verify(req.headers.authorization, config.common.session.secret);
   } catch (err) {
-    next(errors.unauthorizedError());
+    return next(errors.unauthorizedError(errorMessages.invalidToken));
   }
+  return db.user
+    .findOne({ where: { id: decoded.params.id } })
+    .catch(err => {
+      throw errors.databaseError(err.message);
+    })
+    .then(user => {
+      if (!user) {
+        next(errors.unauthorizedError(errorMessages.userNotFound));
+      }
+      req.user = { firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role };
+      logger.info(`User ${user.email} logged`);
+      next();
+    })
+    .catch(next);
+};
+
+exports.authenticateAdmin = (req, res, next) => {
+  if (req.user.role !== roles.admin) {
+    return next(errors.unauthorizedError(errorMessages.notadminUser));
+  }
+  logger.info('User logged is admin');
+  return next();
 };
