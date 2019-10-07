@@ -11,7 +11,8 @@ const statusCodes = {
   [errors.BAD_REQUEST_ERROR]: 400,
   [errors.VALIDATION_ERROR]: 400,
   [errors.UNAUTHORIZED_ERROR]: 401,
-  [errors.EMAIL_REGISTERED_ERROR]: 400
+  [errors.EMAIL_REGISTERED_ERROR]: 400,
+  [errors.USER_ALREADY_HAS_ALBUM]: 400
 };
 
 exports.handle = (error, req, res, next) => {

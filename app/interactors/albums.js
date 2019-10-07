@@ -3,11 +3,14 @@ const errors = require('../errors');
 const albums = require('../services/albums');
 const db = require('../models');
 const errorMessages = require('../constants/errorsMessages');
+const logger = require('../logger');
 exports.userBuysAlbum = (albumId, userId) => {
   let albumToBuy = null;
   return albums
     .getAlbums({ id: albumId })
     .then(response => {
+      // TODO: delete
+      logger.info(`--------${response}`);
       const album = JSON.parse(response);
       if (album.length === 0) {
         throw errors.notFoundError(errorMessages.albumNotFound);
@@ -22,8 +25,7 @@ exports.userBuysAlbum = (albumId, userId) => {
     })
     .then(albumUser => {
       if (albumUser.count >= 1) {
-        // TODO: change error, internal code is not found
-        throw errors.notFoundError(errorMessages.userAlreadyHasAlbum);
+        throw errors.usarAlreadyHasAlbum(errorMessages.userAlreadyHasAlbum);
       }
       return db.albumsByUser.create({ userId, albumId, albumTitle: albumToBuy.title }).catch(err => {
         throw errors.databaseError(err.message);

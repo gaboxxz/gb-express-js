@@ -36,5 +36,5 @@ exports.getPhotosByAlbumId = (req, res, next) => {
 exports.buyAlbum = (req, res, next) =>
   albumInteractor
     .userBuysAlbum(req.params.id, req.user.id)
-    .then(jj => res.send(jj))
+    .then(res.send)
     .catch(next);
