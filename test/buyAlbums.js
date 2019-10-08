@@ -44,12 +44,13 @@ describe('Post /albums/:id', () => {
             token = res.body.session.token;
           });
       })
-      .then(() => {
+      .then(() =>
+        // TODO: change to process variable
         nock('https://jsonplaceholder.typicode.com')
           .persist()
           .get(`/albums?id=${mockAlbum.id}`)
-          .reply(200, [mockAlbum]);
-      })
+          .reply(200, [mockAlbum])
+      )
   );
 
   it('Buys valid album', () =>
@@ -70,7 +71,7 @@ describe('Post /albums/:id', () => {
         expect(res.body.userId).toBe(userId);
       }));
 
-  it('Tries to buy an album already bought', () => {
+  it('Tries to buy an album already bought', () =>
     request
       .post(`/albums/${mockAlbum.id}`)
       .set('Content-Type', 'application/json')
@@ -86,13 +87,12 @@ describe('Post /albums/:id', () => {
           .send()
       )
       .then(res => {
-        expect(res.status).toBe(200);
+        expect(res.status).toBe(400);
         expect(res.body).toHaveProperty('internal_code');
         expect(res.body).toHaveProperty('message');
-        expect(res.body.internal_code).toBe(errors.VALIDATION_ERROR);
+        expect(res.body.internal_code).toBe(errors.USER_ALREADY_HAS_ALBUM);
         expect(res.body.message).toBe(errorMessages.userAlreadyHasAlbum);
-      });
-  });
+      }));
 
   it('Tries to buy non existant album, returns not found error', () => {
     nock('https://jsonplaceholder.typicode.com')
