@@ -3,7 +3,7 @@ const supertest = require('supertest');
 const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const errorMessages = require('../app/constants/errorsMessages');
-// const { roles } = require('../app/constants/roles');
+const config = require('../config');
 const nock = require('nock');
 const validUser = {
   first_name: 'TestName',
@@ -45,8 +45,7 @@ describe('Post /albums/:id', () => {
           });
       })
       .then(() =>
-        // TODO: change to process variable
-        nock('https://jsonplaceholder.typicode.com')
+        nock(config.common.albumsUrl)
           .persist()
           .get(`/albums?id=${mockAlbum.id}`)
           .reply(200, [mockAlbum])
@@ -95,7 +94,7 @@ describe('Post /albums/:id', () => {
       }));
 
   it('Tries to buy non existant album, returns not found error', () => {
-    nock('https://jsonplaceholder.typicode.com')
+    nock(config.common.albumsUrl)
       .get(`/albums?id=${nonExistantAlbumId}`)
       .reply(200, respo);
     return request
@@ -113,7 +112,7 @@ describe('Post /albums/:id', () => {
       });
   });
 
-  it('Tries to buy album without authorization', done =>
+  it('Tries to buy album without authorization', () =>
     request
       .post(`/albums/${mockAlbum.id}`)
       .set('Content-Type', 'application/json')
@@ -126,6 +125,5 @@ describe('Post /albums/:id', () => {
         expect(res.body).toHaveProperty('message');
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
         expect(res.body.message).toBe(errorMessages.invalidToken);
-        done();
       }));
 });

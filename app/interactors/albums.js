@@ -9,8 +9,7 @@ exports.userBuysAlbum = (albumId, userId) => {
   return albums
     .getAlbums({ id: albumId })
     .then(response => {
-      // TODO: delete
-      logger.info(`--------${response}`);
+      logger.info(`Retrieved album from external service to buy ${response}`);
       const album = JSON.parse(response);
       if (album.length === 0) {
         throw errors.notFoundError(errorMessages.albumNotFound);

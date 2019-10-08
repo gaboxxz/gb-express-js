@@ -36,6 +36,5 @@ exports.getPhotosByAlbumId = (req, res, next) => {
 exports.buyAlbum = (req, res, next) =>
   albumInteractor
     .userBuysAlbum(req.params.id, req.user.id)
-    // TODO: mapp response
     .then(buyedAlbum => res.send(buyedAlbum))
     .catch(next);
