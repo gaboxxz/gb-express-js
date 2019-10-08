@@ -107,7 +107,7 @@ describe('Post admin/users', () => {
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
       }));
 
-  it('Tries to create new valid Admin user with user that is not admin', () => {
+  it('Tries to create new valid Admin user with user that is not admin', done => {
     let tokenTest = null;
 
     return factory
@@ -139,6 +139,7 @@ describe('Post admin/users', () => {
         expect(res.body).toHaveProperty('message');
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
         expect(res.body.message).toBe(errorMessages.notadminUser);
+        done();
       });
   });
 });

@@ -112,7 +112,7 @@ describe('Post /albums/:id', () => {
       });
   });
 
-  it('Tries to buy album without authorization', () =>
+  it('Tries to buy album without authorization', done =>
     request
       .post(`/albums/${mockAlbum.id}`)
       .set('Content-Type', 'application/json')
@@ -125,5 +125,6 @@ describe('Post /albums/:id', () => {
         expect(res.body).toHaveProperty('message');
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
         expect(res.body.message).toBe(errorMessages.invalidToken);
+        done();
       }));
 });
