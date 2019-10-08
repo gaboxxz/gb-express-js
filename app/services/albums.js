@@ -1,9 +1,9 @@
 const errors = require('../errors');
 const rp = require('request-promise');
-
+const config = require('../../config');
 exports.getAlbums = queryParams =>
   rp({
-    uri: `${process.env.ALBUMS_URL}albums`,
+    uri: `${config.common.albumsUrl}albums`,
     qs: queryParams,
     method: 'Get'
   }).catch(err => {
@@ -12,7 +12,7 @@ exports.getAlbums = queryParams =>
 
 exports.getIdAlbumPhotos = id =>
   rp({
-    uri: `${process.env.ALBUMS_URL}photos`,
+    uri: `${config.common.albumsUrl}photos`,
     qs: {
       albumId: id
     },
