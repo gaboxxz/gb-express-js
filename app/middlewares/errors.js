@@ -12,7 +12,7 @@ const statusCodes = {
   [errors.VALIDATION_ERROR]: 400,
   [errors.UNAUTHORIZED_ERROR]: 401,
   [errors.EMAIL_REGISTERED_ERROR]: 400,
-  [errors.USER_ALREADY_HAS_ALBUM]: 400
+  [errors.USER_HAS_ALBUM_ERROR]: 400
 };
 
 exports.handle = (error, req, res, next) => {

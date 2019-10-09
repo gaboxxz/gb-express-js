@@ -1,10 +1,11 @@
 const albums = require('../services/albums');
 const logger = require('../../app/logger');
 const errors = require('../errors');
+
 const albumInteractor = require('../interactors/albums');
-exports.getAlbums = (req, res, next) =>
+exports.getAlbum = (req, res, next) =>
   albums
-    .getAlbums(req.query)
+    .getAlbum(req.query)
     .then(json => {
       logger.info('Albums were fetched from external api');
       res.status(200).send(JSON.parse(json));

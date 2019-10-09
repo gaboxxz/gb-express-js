@@ -4,15 +4,17 @@ const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const errorMessages = require('../app/constants/errorsMessages');
 const config = require('../config');
+
 const nock = require('nock');
+
 const validUser = {
   first_name: 'TestName',
   last_name: 'TestLastName',
   password: '12345678Ab',
   email: 'Test@wolox.com'
 };
-
 const validSignIn = { email: validUser.email, password: validUser.password };
+
 const mockAlbum = {
   userId: 1,
   id: 2,
@@ -20,10 +22,9 @@ const mockAlbum = {
 };
 const nonExistantAlbumId = 9999;
 const request = supertest(app);
-describe('Post /albums/:id', () => {
+describe('Buy albums tests: Post to /albums/:id', () => {
   let token = null;
   let userId = null;
-  const respo = [];
   afterAll(() => nock.restore());
 
   beforeEach(() =>
@@ -47,8 +48,8 @@ describe('Post /albums/:id', () => {
       .then(() =>
         nock(config.common.albumsUrl)
           .persist()
-          .get(`/albums?id=${mockAlbum.id}`)
-          .reply(200, [mockAlbum])
+          .get(`/albums/${mockAlbum.id}`)
+          .reply(200, mockAlbum)
       )
   );
 
@@ -89,14 +90,14 @@ describe('Post /albums/:id', () => {
         expect(res.status).toBe(400);
         expect(res.body).toHaveProperty('internal_code');
         expect(res.body).toHaveProperty('message');
-        expect(res.body.internal_code).toBe(errors.USER_ALREADY_HAS_ALBUM);
+        expect(res.body.internal_code).toBe(errors.USER_HAS_ALBUM_ERROR);
         expect(res.body.message).toBe(errorMessages.userAlreadyHasAlbum);
       }));
 
   it('Tries to buy non existant album, returns not found error', () => {
     nock(config.common.albumsUrl)
-      .get(`/albums?id=${nonExistantAlbumId}`)
-      .reply(200, respo);
+      .get(`/albums/${nonExistantAlbumId}`)
+      .reply(404, {});
     return request
       .post(`/albums/${nonExistantAlbumId}`)
       .set('Content-Type', 'application/json')

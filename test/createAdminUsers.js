@@ -4,6 +4,7 @@ const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const errorMessages = require('../app/constants/errorsMessages');
 const { roles } = require('../app/constants/roles');
+
 const validUser = {
   first_name: 'TestName',
   last_name: 'TestLastName',
@@ -107,7 +108,7 @@ describe('Post admin/users', () => {
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
       }));
 
-  it('Tries to create new valid Admin user with user that is not admin', done => {
+  it('Tries to create new valid Admin user with user that is not admin', () => {
     let tokenTest = null;
 
     return factory
@@ -139,7 +140,6 @@ describe('Post admin/users', () => {
         expect(res.body).toHaveProperty('message');
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
         expect(res.body.message).toBe(errorMessages.notadminUser);
-        done();
       });
   });
 });
