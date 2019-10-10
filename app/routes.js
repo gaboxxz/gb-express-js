@@ -6,7 +6,7 @@ const { signUp, signIn, getUsersSchema } = require('./schemas/users');
 const { authenticate, authenticateAdmin } = require('./middlewares/auth');
 exports.init = app => {
   app.get('/health', healthCheck);
-  app.get('/albums', albumsController.getAlbum);
+  app.get('/albums', albumsController.getAlbums);
   app.get('/albums/:id/photos', albumsController.getPhotosByAlbumId);
   app.post('/albums/:id', authenticate, albumsController.buyAlbum);
 

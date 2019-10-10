@@ -64,7 +64,6 @@ describe('Buy albums tests: Post to /albums/:id', () => {
         expect(res.status).toBe(200);
         expect(res.body).toHaveProperty('albumId');
         expect(res.body).toHaveProperty('albumTitle');
-        expect(res.body).toHaveProperty('id');
         expect(res.body).toHaveProperty('userId');
         expect(res.body.albumTitle).toBe(mockAlbum.title);
         expect(res.body.albumId).toBe(mockAlbum.id);
