@@ -27,3 +27,6 @@ exports.emailRegisteredError = message => internalError(message, exports.EMAIL_R
 
 exports.UNAUTHORIZED_ERROR = 'User unauthorized';
 exports.unauthorizedError = message => internalError(message, exports.UNAUTHORIZED_ERROR);
+
+exports.USER_HAS_ALBUM_ERROR = 'USER_HAS_ALBUM';
+exports.userAlreadyHasAlbum = message => internalError(message, exports.USER_HAS_ALBUM_ERROR);

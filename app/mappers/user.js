@@ -17,3 +17,14 @@ exports.mapUserSignIn = userToMap => {
   };
   return userToSignIn;
 };
+
+exports.mapLoggedUser = userToMap => {
+  const userLogged = {
+    id: userToMap.id,
+    firstName: userToMap.firstName,
+    lastName: userToMap.lastName,
+    email: userToMap.email,
+    role: userToMap.role
+  };
+  return userLogged;
+};

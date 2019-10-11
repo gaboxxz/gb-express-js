@@ -1,18 +1,41 @@
 const errors = require('../errors');
 const rp = require('request-promise');
+const config = require('../../config');
+const errorMessages = require('../constants/errorsMessages');
 
-exports.getAlbums = () =>
-  rp(`${process.env.ALBUMS_URL}albums`).catch(err => {
+exports.getAlbumById = albumId =>
+  rp({
+    uri: `${config.common.albumsUrl}albums/${albumId}`,
+    method: 'GET',
+    json: true
+  }).catch(err => {
+    if (err.statusCode === 404) {
+      throw errors.notFoundError(errorMessages.albumNotFound);
+    }
     throw errors.externalApiError(err.message);
   });
 
-exports.getIdAlbumPhotos = id =>
+exports.getAlbums = query =>
   rp({
-    uri: `${process.env.ALBUMS_URL}photos`,
+    uri: `${config.common.albumsUrl}albums`,
+    qs: query,
+    method: 'GET',
+    json: true
+  }).catch(err => {
+    if (err.statusCode === 404) {
+      throw errors.notFoundError(errorMessages.albumNotFound);
+    }
+    throw errors.externalApiError(err.message);
+  });
+
+exports.getPhotosByAlbumId = id =>
+  rp({
+    uri: `${config.common.albumsUrl}photos`,
     qs: {
       albumId: id
     },
-    method: 'GET'
+    method: 'GET',
+    json: true
   }).catch(err => {
     throw errors.externalApiError(err.message);
   });

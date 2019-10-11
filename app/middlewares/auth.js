@@ -5,6 +5,8 @@ const logger = require('../logger');
 const config = require('../../config');
 const db = require('../models');
 const { roles } = require('../constants/roles');
+const mappers = require('../mappers/user');
+
 exports.authenticate = (req, res, next) => {
   let decoded = null;
   try {
@@ -21,7 +23,7 @@ exports.authenticate = (req, res, next) => {
       if (!user) {
         next(errors.unauthorizedError(errorMessages.userNotFound));
       }
-      req.user = { firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role };
+      req.user = mappers.mapLoggedUser(user);
       logger.info(`User ${user.email} logged`);
       next();
     })

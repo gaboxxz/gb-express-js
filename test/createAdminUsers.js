@@ -4,6 +4,7 @@ const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const errorMessages = require('../app/constants/errorsMessages');
 const { roles } = require('../app/constants/roles');
+
 const validUser = {
   first_name: 'TestName',
   last_name: 'TestLastName',
@@ -18,7 +19,6 @@ const validUserNotAdmin = {
   email: 'notAdmin@wolox.com'
 };
 const validSignIn = { email: 'Test@wolox.com', password: '12345678Ab' };
-
 const request = supertest(app);
 
 describe('Post admin/users', () => {

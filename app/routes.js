@@ -8,6 +8,7 @@ exports.init = app => {
   app.get('/health', healthCheck);
   app.get('/albums', albumsController.getAlbums);
   app.get('/albums/:id/photos', albumsController.getPhotosByAlbumId);
+  app.post('/albums/:id', authenticate, albumsController.buyAlbum);
 
   app.post('/users/sessions', validateSchemaAndFail(signIn), usersController.signIn);
   app.post('/users', validateSchemaAndFail(signUp), usersController.createUser);
