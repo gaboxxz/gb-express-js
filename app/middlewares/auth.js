@@ -37,3 +37,17 @@ exports.authenticateAdmin = (req, res, next) => {
   logger.info('User logged is admin');
   return next();
 };
+
+exports.checkAccessToAlbums = (req, res, next) => {
+  if (req.user.role === roles.admin) {
+    logger.info('User is admin, can get acces to any user album list');
+    return next();
+  }
+  if (parseInt(req.user.id) === parseInt(req.params.user_id)) {
+    logger.info('User is requesting access to his own albums');
+    return next();
+  }
+  logger.error('User is requesting access to other users albums and is not admin. Rejecting request');
+  // TODO: Take message to constant
+  return next(errors.unauthorizedError('Must be Admin to access other users albums'));
+};

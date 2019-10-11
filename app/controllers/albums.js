@@ -1,7 +1,7 @@
 const albums = require('../services/albums');
 const logger = require('../../app/logger');
 const errors = require('../errors');
-
+const db = require('../models');
 const albumInteractor = require('../interactors/albums');
 
 exports.getAlbums = (req, res, next) =>
@@ -47,3 +47,9 @@ exports.buyAlbum = (req, res, next) => {
     .then(buyedAlbum => res.send(buyedAlbum))
     .catch(next);
 };
+
+exports.getAlbumsByUserId = (req, res, next) =>
+  db.albumsByUser
+    .findAndCountAll({ where: { userId: req.params.user_id } })
+    .then(albumsList => res.send(albumsList))
+    .catch(err => next(errors.databaseError(err.message)));

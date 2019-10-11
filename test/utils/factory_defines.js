@@ -18,3 +18,7 @@ factory.define(
     }
   }
 );
+
+// factory.define('albumsByUser', albumsByUser, {
+//   userId: factory.user
+// });
