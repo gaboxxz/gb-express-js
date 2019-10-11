@@ -28,7 +28,7 @@ describe('Get buyed albums by user id GET /users/:user_id/albums', () => {
           .then(res => {
             // eslint-disable-next-line prefer-destructuring
             token = res.body.session.token;
-            done();
+            return done();
           })
       )
   );

@@ -16,7 +16,7 @@ const request = supertest(app);
 
 describe('Get /users', () => {
   let token = null;
-  beforeEach(() =>
+  beforeEach(done =>
     factory
       .create('user', validUser)
       .then(() => factory.createMany('user', 15))
@@ -24,11 +24,11 @@ describe('Get /users', () => {
         request
           .post('/users/sessions')
           .send(validSignIn)
-          .then(
-            res =>
-              // eslint-disable-next-line prefer-destructuring
-              (token = res.body.session.token)
-          )
+          .then(res => {
+            // eslint-disable-next-line prefer-destructuring
+            token = res.body.session.token;
+            return done();
+          })
       )
   );
 
