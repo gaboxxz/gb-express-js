@@ -30,6 +30,7 @@ describe('Get /users', () => {
               (token = res.body.session.token)
           )
       )
+      .catch(console.log)
   );
 
   it.each([[1, 1, 1], [1, 3, 3], [4, 5, 1]])(
