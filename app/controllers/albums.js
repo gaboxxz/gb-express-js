@@ -57,3 +57,14 @@ exports.getAlbumsByUserId = (req, res, next) =>
       res.send(serializedAlbums);
     })
     .catch(err => next(errors.databaseError(err.message)));
+exports.getPhotosFromBuyedAlbum = (req, res, next) => {
+  const albumId = req.params.id;
+  const userId = req.user.id;
+  return albumInteractor
+    .getPhotosFromAlbumByIdAndUser(albumId, userId)
+    .then(photosList => {
+      // TODO: serialize photos list
+      res.send(photosList);
+    })
+    .catch(next);
+};
