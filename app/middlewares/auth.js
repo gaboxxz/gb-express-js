@@ -6,7 +6,7 @@ const config = require('../../config');
 const db = require('../models');
 const { roles } = require('../constants/roles');
 const mappers = require('../mappers/user');
-
+const constants = require('../constants');
 exports.authenticate = (req, res, next) => {
   let decoded = null;
   try {
@@ -48,6 +48,5 @@ exports.checkAccessToAlbums = (req, res, next) => {
     return next();
   }
   logger.error('User is requesting access to other users albums and is not admin. Rejecting request');
-  // TODO: Take message to constant
-  return next(errors.unauthorizedError('Must be Admin to access other users albums'));
+  return next(errors.unauthorizedError(constants.notAdminToGetAlbums));
 };

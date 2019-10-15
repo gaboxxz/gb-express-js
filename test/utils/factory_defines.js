@@ -1,4 +1,4 @@
-const { user } = require('../../app/models/');
+const { user, albumsByUser } = require('../../app/models/');
 const helpers = require('../../app/helpers');
 const { factory } = require('factory-girl');
 
@@ -19,6 +19,8 @@ factory.define(
   }
 );
 
-// factory.define('albumsByUser', albumsByUser, {
-//   userId: factory.user
-// });
+factory.define('albumsByUser', albumsByUser, {
+  userId: factory.assocMany('user', 'id'),
+  albumId: null,
+  albumTitle: factory.chance('sentence')
+});
