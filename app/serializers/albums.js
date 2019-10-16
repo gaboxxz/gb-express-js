@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 exports.serializeAlbumsResponse = findedAlbums => ({
   count: findedAlbums.rows.length,
   rows: findedAlbums.rows.map(element => ({
@@ -8,3 +9,12 @@ exports.serializeAlbumsResponse = findedAlbums => ({
     updated_at: element.updated_at
   }))
 });
+=======
+exports.serializeAlbumPhotos = photosList => {
+  const serializedPhotoList = {
+    count: photosList.length,
+    rows: photosList
+  };
+  return serializedPhotoList;
+};
+>>>>>>> working on tests
