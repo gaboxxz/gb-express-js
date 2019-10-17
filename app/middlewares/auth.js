@@ -7,6 +7,7 @@ const db = require('../models');
 const { roles } = require('../constants/roles');
 const mappers = require('../mappers/user');
 const constants = require('../constants');
+
 exports.authenticate = (req, res, next) => {
   let decoded = null;
   try {

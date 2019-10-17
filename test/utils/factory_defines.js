@@ -1,6 +1,7 @@
 const { user, albumsByUser } = require('../../app/models/');
 const helpers = require('../../app/helpers');
 const { factory } = require('factory-girl');
+
 factory.define(
   'user',
   user,

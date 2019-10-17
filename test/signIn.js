@@ -2,6 +2,7 @@ const app = require('../server');
 const errors = require('../app/errors');
 const supertest = require('supertest');
 const { paramsValidationsErrors } = require('../app/constants/errorsMessages');
+
 const validUser = {
   first_name: 'TestName',
   last_name: 'TestLastName',

@@ -1,5 +1,4 @@
 const app = require('../server');
-// const db = require('../app/models');
 const supertest = require('supertest');
 const errors = require('../app/errors');
 const { paramsValidationsErrors } = require('../app/constants/errorsMessages');

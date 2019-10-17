@@ -4,6 +4,7 @@ const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const constants = require('../app/constants');
 const { paramsValidationsErrors } = require('../app/constants/errorsMessages');
+
 const validUser = {
   firstName: 'TestName',
   lastName: 'TestLastName',
@@ -30,6 +31,7 @@ describe('Get /users', () => {
               (token = res.body.session.token)
           )
       )
+      // eslint-disable-next-line no-console
       .catch(console.log)
   );
 

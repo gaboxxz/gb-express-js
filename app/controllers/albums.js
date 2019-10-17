@@ -4,6 +4,7 @@ const errors = require('../errors');
 const db = require('../models');
 const albumInteractor = require('../interactors/albums');
 const { serializeAlbumsResponse } = require('../serializers/albums');
+
 exports.getAlbums = (req, res, next) =>
   albums
     .getAlbums(req.query)
@@ -52,7 +53,7 @@ exports.getAlbumsByUserId = (req, res, next) =>
   db.albumsByUser
     .findAndCountAll({ where: { userId: req.params.user_id } })
     .then(albumsList => {
-      serializeAlbumsResponse(albumsList);
-      return res.send(albumsList);
+      const serializedAlbums = serializeAlbumsResponse(albumsList);
+      res.send(serializedAlbums);
     })
     .catch(err => next(errors.databaseError(err.message)));

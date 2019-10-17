@@ -4,6 +4,7 @@ const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const { roles } = require('../app/constants/roles');
 const constants = require('../app/constants');
+
 const validUser = {
   firstName: 'TestName',
   lastName: 'TestLastName',
@@ -62,6 +63,7 @@ describe('Get buyed albums by user id GET /users/:user_id/albums', () => {
           })
       )
       .catch(err => {
+        // eslint-disable-next-line no-console
         console.log(err);
       })
       .then(() => done())
