@@ -4,6 +4,7 @@ const usersController = require('./controllers/users');
 const { validateSchemaAndFail } = require('./middlewares/params_validator');
 const { signUp, signIn, getUsersSchema } = require('./schemas/users');
 const { authenticate, authenticateAdmin, checkAccessToAlbums } = require('./middlewares/auth');
+
 exports.init = app => {
   app.get('/health', healthCheck);
   app.get('/albums', albumsController.getAlbums);

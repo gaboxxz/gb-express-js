@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 const constants = require('../constants');
+
 module.exports = {
   paramsValidationsErrors: {
     invalidEmail: 'Invalid Email.',
