@@ -1,7 +1,6 @@
 const albums = require('../services/albums');
 const logger = require('../../app/logger');
 const errors = require('../errors');
-
 const albumInteractor = require('../interactors/albums');
 
 exports.getAlbums = (req, res, next) =>

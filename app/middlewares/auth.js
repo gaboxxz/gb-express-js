@@ -16,6 +16,15 @@ exports.authenticate = (req, res, next) => {
   }
   return db.user
     .findOne({ where: { id: decoded.params.id } })
+    .then(user => {
+      const tokenCreatedDate = new Date(decoded.params.created);
+      if (tokenCreatedDate < user.sessionsValidFrom) {
+        logger.error('session expired');
+        // TODO: see if i have to add error. ADD message
+        throw errors.defaultError('session expired');
+      }
+      return user;
+    })
     .catch(err => {
       throw errors.databaseError(err.message);
     })

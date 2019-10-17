@@ -38,7 +38,8 @@ exports.signIn = (req, res, next) => {
       }
       if (helpers.passwordChecks(userToSignIn.password, user.password)) {
         logger.info(`User ${user.firstName} logged with correct password.`);
-        const token = helpers.createToken({ id: user.id });
+        const created = Date.now();
+        const token = helpers.createToken({ id: user.id, created });
         const serializedToken = serializeToken(token);
         return res.status(200).send(serializedToken);
       }
@@ -71,4 +72,12 @@ exports.createAdminUser = (req, res, next) => {
     .upsert(admin, { returning: true })
     .then(admUser => res.send(serializeCreatedUser(admUser[0])))
     .catch(next);
+};
+
+exports.invalidateSessions = (req, res, next) => {
+  const userId = req.user.id;
+  db.user
+    .update({ sessionsValidFrom: Date.now() }, { where: { id: userId } })
+    .then(() => res.send())
+    .catch(err => next(errors.databaseError(err.message)));
 };

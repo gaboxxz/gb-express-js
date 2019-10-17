@@ -11,6 +11,7 @@ exports.init = app => {
   app.post('/albums/:id', authenticate, albumsController.buyAlbum);
 
   app.post('/users/sessions', validateSchemaAndFail(signIn), usersController.signIn);
+  app.post('/users/sessions/invalidate_all', authenticate, usersController.invalidateSessions);
   app.post('/users', validateSchemaAndFail(signUp), usersController.createUser);
   app.get('/users', authenticate, validateSchemaAndFail(getUsersSchema), usersController.getUsers);
 
