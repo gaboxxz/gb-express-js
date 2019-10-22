@@ -1,10 +1,11 @@
-const app = require('../server');
 const supertest = require('supertest');
 const { factory } = require('factory-girl');
+
 const errors = require('../app/errors');
 const { roles } = require('../app/constants/roles');
 const constants = require('../app/constants');
-
+const app = require('../server');
+const helpers = require('./helpers');
 const validUser = {
   firstName: 'TestName',
   lastName: 'TestLastName',
@@ -18,8 +19,34 @@ const validUserAdmin = {
   email: 'TestAdmin@wolox.com',
   role: roles.admin
 };
-
 const request = supertest(app);
+
+describe('Authorization tests for GET /users/:user_id/albums ', () => {
+  it('Tries to get user albums with invalid token', done =>
+    request
+      .get('/users/1/albums')
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .set('authorization', '000000000FFFFFFFFFFFFF&&//%$')
+      .send()
+      .then(res => {
+        expect(res.status).toBe(401);
+        expect(res.body).toHaveProperty('internal_code');
+        expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
+        done();
+      }));
+  it('Tries to get user albums without token', () =>
+    request
+      .get('/users/1/albums')
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .send()
+      .then(res => {
+        expect(res.status).toBe(401);
+        expect(res.body).toHaveProperty('internal_code');
+        expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
+      }));
+});
 
 describe('Get buyed albums by user id GET /users/:user_id/albums', () => {
   let validUserId = null;
@@ -45,54 +72,17 @@ describe('Get buyed albums by user id GET /users/:user_id/albums', () => {
         ]);
       })
       .then(() =>
-        request
-          .post('/users/sessions')
-          .send({ email: validUser.email, password: validUser.password })
-          .then(res => {
-            // eslint-disable-next-line prefer-destructuring
-            validUserToken = res.body.session.token;
-          })
+        helpers.userLogin(request, validUser.email, validUser.password).then(token => {
+          validUserToken = token;
+        })
       )
       .then(() =>
-        request
-          .post('/users/sessions')
-          .send({ email: validUserAdmin.email, password: validUserAdmin.password })
-          .then(res => {
-            // eslint-disable-next-line prefer-destructuring
-            validAdminUserToken = res.body.session.token;
-          })
+        helpers.userLogin(request, validUserAdmin.email, validUserAdmin.password).then(token => {
+          validAdminUserToken = token;
+          done();
+        })
       )
-      .catch(err => {
-        // eslint-disable-next-line no-console
-        console.log(err);
-      })
-      .then(() => done())
   );
-
-  it('Tries to get user albums with invalid token', done =>
-    request
-      .get('/users/1/albums')
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-      .set('authorization', '000000000FFFFFFFFFFFFF&&//%$')
-      .send()
-      .then(res => {
-        expect(res.status).toBe(401);
-        expect(res.body).toHaveProperty('internal_code');
-        expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
-        done();
-      }));
-  it('Tries to get user albums without token', () =>
-    request
-      .get('/users/1/albums')
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-      .send()
-      .then(res => {
-        expect(res.status).toBe(401);
-        expect(res.body).toHaveProperty('internal_code');
-        expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
-      }));
 
   it('Get own user album, being not admin user', done =>
     request
