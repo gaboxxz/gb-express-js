@@ -65,11 +65,13 @@
     "jsonwebtoken": "^8.5.1",
     "jwt-simple": "^0.5.1",
     "node-fetch": "^2.6.0",
+    "nodemailer": "^6.3.1",
     "npm": "^6.11.3",
     "pg": "^7.4.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "sequelize": "^4.34.0",
+    "telegraf": "^3.33.0",
     "umzug": "^2.1.0"
   },
   "devDependencies": {

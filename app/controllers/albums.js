@@ -1,7 +1,7 @@
 const albums = require('../services/albums');
 const logger = require('../../app/logger');
 const errors = require('../errors');
-
+const a = require('./viaje');
 const albumInteractor = require('../interactors/albums');
 
 exports.getAlbums = (req, res, next) =>
@@ -9,6 +9,22 @@ exports.getAlbums = (req, res, next) =>
     .getAlbums(req.query)
     .then(json => {
       logger.info('Albums were fetched from external api');
+      a.searchFligths('EZE-sky', 'LHR-sky', '2020-03-01', process.env.ezeLhr);
+
+      setTimeout(() => {
+        console.log('Waiting 1');
+      }, 6000);
+
+      a.searchFligths('EZE-sky', 'LGW-sky', '2020-03-01', process.env.ezeLGW);
+
+      setTimeout(() => {
+        console.log('waiting 2');
+      }, 6000);
+
+      a.searchFligths('ROME-sky', 'EZE-sky', '2020-03-23', process.env.romaEzeiza);
+      setTimeout(() => {
+        console.log('Waiting');
+      }, 6000);
       res.status(200).send(json);
     })
     .catch(err => {

@@ -8,6 +8,7 @@ const errors = require('../errors');
 const db = require('../models');
 const constants = require('../constants');
 const { roles } = require('../constants/roles');
+const mailer = require('../services/mailer');
 
 exports.createUser = (req, res, next) => {
   const newUserData = mapUserCreateRequest(req.body);
@@ -23,6 +24,7 @@ exports.createUser = (req, res, next) => {
     .then(createdUser => {
       logger.info(`User ${createdUser.firstName} was created.`);
       const serializedUser = serializeCreatedUser(createdUser);
+      mailer.sendEmail();
       return res.status(201).send(serializedUser);
     })
     .catch(next);
