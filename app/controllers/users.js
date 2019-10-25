@@ -76,7 +76,7 @@ exports.createAdminUser = (req, res, next) => {
 
 exports.invalidateSessions = (req, res, next) => {
   const userId = req.user.id;
-  db.user
+  return db.user
     .update({ sessionsValidFrom: Date.now() }, { where: { id: userId } })
     .then(() => res.send())
     .catch(err => next(errors.databaseError(err.message)));

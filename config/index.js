@@ -36,6 +36,7 @@ const config = {
     saltRouds: process.env.SALT_ROUNDS,
     emailDomain: process.env.EMAIL_DOMAIN,
     albumsUrl: process.env.ALBUMS_URL,
+    sessionExpireTime: process.env.SESSION_EXPIRE_TIME,
     api: {
       bodySizeLimit: process.env.API_BODY_SIZE_LIMIT,
       parameterLimit: process.env.API_PARAMETER_LIMIT,

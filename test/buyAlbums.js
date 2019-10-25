@@ -123,8 +123,6 @@ describe('Buy albums tests: Post to /albums/:id', () => {
         expect(res.status).toBe(401);
         expect(res.body).toHaveProperty('internal_code');
         expect(res.body).toHaveProperty('message');
-        expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
-        expect(res.body.message).toBe(errorMessages.invalidToken);
         done();
       }));
 });

@@ -2,6 +2,7 @@ const app = require('../server');
 const errors = require('../app/errors');
 const supertest = require('supertest');
 const { paramsValidationsErrors } = require('../app/constants/errorsMessages');
+
 const validUser = {
   first_name: 'TestName',
   last_name: 'TestLastName',
@@ -32,8 +33,10 @@ describe('Post /users/sessions', () => {
     expect(response.body).toHaveProperty('session');
     expect(response.body.session).toHaveProperty('auth');
     expect(response.body.session).toHaveProperty('token');
+    expect(response.body.session).toHaveProperty('expiration_time');
     expect(response.body.session.auth).toBe(true);
     expect(response.body.session.token).not.toBe('');
+    expect(response.body.session.expiration_time).toBe(process.env.SESSION_EXPIRE_TIME);
     done();
   });
 

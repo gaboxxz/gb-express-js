@@ -1,4 +1,4 @@
-const { checkSchema, validationResult } = require('express-validator/check');
+const { checkSchema, validationResult } = require('express-validator');
 const logger = require('../logger');
 const errors = require('../errors');
 const { serializeParamError } = require('../serializers/errors');

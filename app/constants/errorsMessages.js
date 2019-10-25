@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 const constants = require('../constants');
+
 module.exports = {
   paramsValidationsErrors: {
     invalidEmail: 'Invalid Email.',
@@ -12,8 +13,9 @@ module.exports = {
     invalidPageSizeParam: 'Invalid param "PAGESIZE". Must be integer greater than 0'
   },
   notadminUser: 'User is not admin',
-  invalidToken: 'Invalid Token',
   userNotFound: 'User was not found',
   albumNotFound: 'Album not found',
-  userAlreadyHasAlbum: 'User already has album'
+  userAlreadyHasAlbum: 'User already has album',
+  sessionExpired: 'Session expired.',
+  notAdminToGetAlbums: 'Must be Admin to access other users albums'
 };
