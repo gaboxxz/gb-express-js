@@ -1,4 +1,4 @@
-const { user } = require('../../app/models/');
+const { user, albumsByUser } = require('../../app/models/');
 const helpers = require('../../app/helpers');
 const { factory } = require('factory-girl');
 
@@ -8,7 +8,7 @@ factory.define(
   {
     firstName: factory.chance('name', { middle: true }),
     lastName: factory.chance('name', { middle: true }),
-    email: factory.chance('email', { domain: 'wolox.com' }),
+    email: factory.sequence('User.email', n => `dummy-user-${n}@wolox.com`),
     password: factory.chance('string', { length: 8 })
   },
   {
@@ -18,3 +18,9 @@ factory.define(
     }
   }
 );
+
+factory.define('albumsByUser', albumsByUser, {
+  userId: factory.assocMany('user', 'id'),
+  albumId: null,
+  albumTitle: factory.chance('sentence')
+});

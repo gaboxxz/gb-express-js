@@ -4,6 +4,7 @@ const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const constants = require('../app/constants');
 const { paramsValidationsErrors } = require('../app/constants/errorsMessages');
+
 const validUser = {
   firstName: 'TestName',
   lastName: 'TestLastName',

@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 const constants = require('../constants');
+
 module.exports = {
   paramsValidationsErrors: {
     invalidEmail: 'Invalid Email.',
@@ -15,5 +16,6 @@ module.exports = {
   invalidToken: 'Invalid Token',
   userNotFound: 'User was not found',
   albumNotFound: 'Album not found',
-  userAlreadyHasAlbum: 'User already has album'
+  userAlreadyHasAlbum: 'User already has album',
+  notAdminToGetAlbums: 'Must be Admin to access other users albums'
 };
