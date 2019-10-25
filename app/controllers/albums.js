@@ -1,7 +1,7 @@
 const albums = require('../services/albums');
 const logger = require('../../app/logger');
 const errors = require('../errors');
-
+const { serializeAlbumPhotos } = require('../serializers/albums');
 const db = require('../models');
 const albumInteractor = require('../interactors/albums');
 const { serializeAlbumsResponse } = require('../serializers/albums');
@@ -49,7 +49,6 @@ exports.buyAlbum = (req, res, next) => {
     .then(buyedAlbum => res.send(buyedAlbum))
     .catch(next);
 };
-
 
 exports.getPhotosFromBuyedAlbum = (req, res, next) => {
   const albumId = req.params.id;
