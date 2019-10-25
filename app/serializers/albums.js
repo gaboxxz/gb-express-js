@@ -19,3 +19,4 @@ exports.serializeAlbumPhotos = photosList => {
   };
   return serializedPhotoList;
 };
+
