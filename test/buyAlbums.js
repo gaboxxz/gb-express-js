@@ -20,12 +20,19 @@ const mockAlbum = {
   id: 2,
   title: 'My album title.'
 };
+
 const nonExistantAlbumId = 9999;
 const request = supertest(app);
+
 describe('Buy albums tests: Post to /albums/:id', () => {
   let token = null;
   let userId = null;
   afterAll(() => nock.restore());
+  beforeAll(() => {
+    if (!nock.isActive()) {
+      nock.activate();
+    }
+  });
 
   beforeEach(() =>
     factory

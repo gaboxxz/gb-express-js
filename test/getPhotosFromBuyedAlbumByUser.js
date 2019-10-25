@@ -3,8 +3,8 @@ const supertest = require('supertest');
 const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const { roles } = require('../app/constants/roles');
-const constants = require('../app/constants');
-// const config = require('../config');
+// const constants = require('../app/constants');
+const config = require('../config');
 
 const nock = require('nock');
 
@@ -22,22 +22,24 @@ const validUserAdmin = {
   role: roles.admin
 };
 
-// const mockPhotosAlbunId = [
-//   {
-//     albumId: 1,
-//     id: 1,
-//     title: 'accusamus beatae ad facilis cum similique qui sunt',
-//     url: 'https://via.placeholder.com/600/92c952',
-//     thumbnailUrl: 'https://via.placeholder.com/150/92c952'
-//   },
-//   {
-//     albumId: 1,
-//     id: 2,
-//     title: 'reprehenderit est deserunt velit ipsam',
-//     url: 'https://via.placeholder.com/600/771796',
-//     thumbnailUrl: 'https://via.placeholder.com/150/771796'
-//   }
-// ];
+const mockAlbumId = 1;
+const requestPhotosUrl = `/users/albums/${mockAlbumId}/photos`;
+const mockPhotosAlbunId = [
+  {
+    albumId: mockAlbumId,
+    id: 1,
+    title: 'accusamus beatae ad facilis cum similique qui sunt',
+    url: 'https://via.placeholder.com/600/92c952',
+    thumbnailUrl: 'https://via.placeholder.com/150/92c952'
+  },
+  {
+    albumId: mockAlbumId,
+    id: 2,
+    title: 'reprehenderit est deserunt velit ipsam',
+    url: 'https://via.placeholder.com/600/771796',
+    thumbnailUrl: 'https://via.placeholder.com/150/771796'
+  }
+];
 
 const request = supertest(app);
 
@@ -48,8 +50,13 @@ describe('Get photos from buyed album by user id GET /users/albums/:id/photos', 
   let validAdminUserToken = null;
 
   afterAll(() => nock.restore());
+  beforeAll(() => {
+    if (!nock.isActive()) {
+      nock.activate();
+    }
+  });
 
-  beforeEach(done =>
+  beforeEach(() =>
     factory
       .create('user', validUser)
       .then(user => {
@@ -79,24 +86,23 @@ describe('Get photos from buyed album by user id GET /users/albums/:id/photos', 
           .then(res => {
             // eslint-disable-next-line prefer-destructuring
             validAdminUserToken = res.body.session.token;
-            console.log(`------------------>>>>>>>>>><${validAdminUserToken}`);
           })
       )
-      //   .then(() =>
-      //     nock(config.common.albumsUrl)
-      //       .persist()
-      //       .get('/photos?albumId=1')
-      //       .reply(200, mockPhotosAlbunId)
-      //   )
+      .then(() => {
+        nock(config.common.albumsUrl)
+          .get('/photos')
+          .query(true)
+          .reply(200, mockPhotosAlbunId);
+      })
       .catch(err => {
+        // eslint-disable-next-line no-console
         console.log(err);
       })
-      .then(() => done())
   );
 
   it('Tries to get photos from album with invalid token', done =>
     request
-      .get('/users/albums/1/photos')
+      .get(requestPhotosUrl)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set('authorization', '000000000FFFFFFFFFFFFF&&//%$')
@@ -110,7 +116,7 @@ describe('Get photos from buyed album by user id GET /users/albums/:id/photos', 
 
   it('Tries to get photos from album without token', () =>
     request
-      .get('/users/albums/1/photos')
+      .get(requestPhotosUrl)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .send()
@@ -120,19 +126,19 @@ describe('Get photos from buyed album by user id GET /users/albums/:id/photos', 
         expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
       }));
 
-  it.only('Get photos from buyed album, not being admin user', done =>
+  it('Get photos from buyed album, not being admin user', done =>
     request
-      .get('/users/albums/1/photos')
+      .get(requestPhotosUrl)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set('authorization', validUserToken)
       .send()
       .then(res => {
-        expect(res.status).toBe(validUserToken);
+        expect(res.status).toBe(200);
         expect(res.body).toHaveProperty('count');
         expect(res.body).toHaveProperty('rows');
         expect(res.body.rows.length).toBeGreaterThan(0);
-        expect(res.body.count).toBe(1);
+        expect(res.body.count).toBe(2);
         res.body.rows.forEach(element => {
           expect(element).toHaveProperty('albumId');
         });
@@ -141,7 +147,7 @@ describe('Get photos from buyed album by user id GET /users/albums/:id/photos', 
 
   it('Get own user album, being admin user', done =>
     request
-      .get('/users/albums/1/photos')
+      .get(requestPhotosUrl)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .set('authorization', validAdminUserToken)
@@ -151,46 +157,21 @@ describe('Get photos from buyed album by user id GET /users/albums/:id/photos', 
         expect(res.body).toHaveProperty('count');
         expect(res.body).toHaveProperty('rows');
         expect(res.body.rows.length).toBeGreaterThan(0);
-        expect(res.body.count).toBe(1);
-        done();
-      }));
-
-  it('Get other user albums, being Admin', done =>
-    request
-      .get()
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-      .set('authorization', validAdminUserToken)
-      .send()
-      .then(res => {
-        expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('count');
-        expect(res.body).toHaveProperty('rows');
-        expect(res.body.rows.length).toBeGreaterThan(0);
-        expect(res.body.count).toBe(3);
+        expect(res.body.count).toBe(2);
         res.body.rows.forEach(element => {
-          expect(element).toHaveProperty('album_title');
-          expect(element).toHaveProperty('user_id');
-          expect(element).toHaveProperty('album_id');
-          expect(element).toHaveProperty('updated_at');
-          expect(element).toHaveProperty('created_at');
-          expect(element.user_id).toBe(validUserId);
+          expect(element).toHaveProperty('albumId');
         });
         done();
       }));
 
-  it('Tries to get other user albums, NOT being Admin', done =>
+  it('Tries to get photos from not buyed album', () =>
     request
-      .get()
+      .get('/users/albums/987/photos')
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
-      .set('Authorization', validUserToken)
+      .set('authorization', validUserToken)
       .send()
       .then(res => {
-        expect(res.status).toBe(401);
-        expect(res.body).toHaveProperty('internal_code');
-        expect(res.body.internal_code).toBe(errors.UNAUTHORIZED_ERROR);
-        expect(res.body.message).toBe(constants.notAdminToGetAlbums);
-        done();
+        expect(res.status).toBe(404);
       }));
 });

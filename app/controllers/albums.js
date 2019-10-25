@@ -5,6 +5,8 @@ const { serializeAlbumPhotos } = require('../serializers/albums');
 const albumInteractor = require('../interactors/albums');
 const { serializeAlbumsResponse } = require('../serializers/albums');
 
+const db = require('../models');
+
 exports.getAlbums = (req, res, next) =>
   albums
     .getAlbums(req.query)
@@ -49,21 +51,17 @@ exports.buyAlbum = (req, res, next) => {
     .catch(next);
 };
 
-exports.getAlbumsByUserId = (req, res, next) =>
-  db.albumsByUser
-    .findAndCountAll({ where: { userId: req.params.user_id } })
-    .then(albumsList => {
-      const serializedAlbums = serializeAlbumsResponse(albumsList);
-      res.send(serializedAlbums);
-    })
-    .catch(err => next(errors.databaseError(err.message)));
 exports.getPhotosFromBuyedAlbum = (req, res, next) => {
   const albumId = req.params.id;
   const userId = req.user.id;
   return albumInteractor
     .getPhotosFromAlbumByIdAndUser(albumId, userId)
-    .then(photosList => {
-      res.send(serializeAlbumPhotos(photosList));
-    })
+    .then(photosList => res.send(serializeAlbumPhotos(photosList)))
     .catch(next);
 };
+
+exports.getAlbumsByUserId = (req, res, next) =>
+  db.albumsByUser
+    .findAndCountAll({ where: { userId: req.params.user_id } })
+    .then(albumsList => res.send(serializeAlbumsResponse(albumsList)))
+    .catch(err => next(errors.databaseError(err.message)));
