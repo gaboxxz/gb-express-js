@@ -3,7 +3,6 @@ const supertest = require('supertest');
 const { factory } = require('factory-girl');
 const errors = require('../app/errors');
 const { roles } = require('../app/constants/roles');
-// const constants = require('../app/constants');
 const config = require('../config');
 
 const nock = require('nock');
@@ -75,7 +74,6 @@ describe('Get photos from buyed album by user id GET /users/albums/:id/photos', 
           .post('/users/sessions')
           .send({ email: validUser.email, password: validUser.password })
           .then(res => {
-            // eslint-disable-next-line prefer-destructuring
             validUserToken = res.body.session.token;
           })
       )
@@ -84,7 +82,6 @@ describe('Get photos from buyed album by user id GET /users/albums/:id/photos', 
           .post('/users/sessions')
           .send({ email: validUserAdmin.email, password: validUserAdmin.password })
           .then(res => {
-            // eslint-disable-next-line prefer-destructuring
             validAdminUserToken = res.body.session.token;
           })
       )
@@ -93,10 +90,6 @@ describe('Get photos from buyed album by user id GET /users/albums/:id/photos', 
           .get('/photos')
           .query(true)
           .reply(200, mockPhotosAlbunId);
-      })
-      .catch(err => {
-        // eslint-disable-next-line no-console
-        console.log(err);
       })
   );
 

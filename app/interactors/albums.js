@@ -31,8 +31,7 @@ exports.getPhotosFromAlbumByIdAndUser = (albumId, userId) =>
     })
     .then(albumByUser => {
       if (!albumByUser) {
-        // TODO: take message to constant
-        throw errors.notFoundError('Album not buyed by user');
+        throw errors.notFoundError(errorMessages.userAlreadyHasAlbum);
       }
       return albums.getPhotosByAlbumId(albumId);
     });
