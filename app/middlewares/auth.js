@@ -1,6 +1,5 @@
 const errors = require('../errors');
 const errorMessages = require('../constants/errorsMessages');
-const jwt = require('jsonwebtoken');
 const logger = require('../logger');
 const config = require('../../config');
 const db = require('../models');
@@ -8,6 +7,8 @@ const { roles } = require('../constants/roles');
 const mappers = require('../mappers/user');
 const constants = require('../constants');
 
+const jwt = require('jsonwebtoken');
+const moment = require('moment');
 exports.authenticate = (req, res, next) => {
   let decoded = null;
   try {
@@ -18,7 +19,8 @@ exports.authenticate = (req, res, next) => {
   return db.user
     .findOne({ where: { id: decoded.params.id } })
     .then(user => {
-      const tokenCreatedDate = new Date(decoded.params.created);
+      const tokenCreatedDate = moment(decoded.params.created);
+      // new Date(decoded.params.created);
       if (tokenCreatedDate < user.sessionsValidFrom) {
         logger.error('session expired');
         next(errors.unauthorizedError(errorMessages.sessionExpired));
