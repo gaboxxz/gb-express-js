@@ -13,10 +13,18 @@ exports.authenticate = (req, res, next) => {
   try {
     decoded = jwt.verify(req.headers.authorization, config.common.session.secret);
   } catch (err) {
-    return next(errors.unauthorizedError(errorMessages.invalidToken));
+    return next(errors.unauthorizedError(err));
   }
   return db.user
     .findOne({ where: { id: decoded.params.id } })
+    .then(user => {
+      const tokenCreatedDate = new Date(decoded.params.created);
+      if (tokenCreatedDate < user.sessionsValidFrom) {
+        logger.error('session expired');
+        next(errors.unauthorizedError(errorMessages.sessionExpired));
+      }
+      return user;
+    })
     .catch(err => {
       throw errors.databaseError(err.message);
     })

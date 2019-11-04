@@ -17,5 +17,6 @@ module.exports = {
   userNotFound: 'User was not found',
   albumNotFound: 'Album not found',
   userAlreadyHasAlbum: 'User already has album',
-  notAdminToGetAlbums: 'Must be Admin to access other users albums'
+  notAdminToGetAlbums: 'Must be Admin to access other users albums',
+  sessionExpired: 'Session has expired'
 };

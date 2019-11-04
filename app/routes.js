@@ -14,6 +14,7 @@ exports.init = app => {
 
   app.get('/users/albums/:id/photos', authenticate, albumsController.getPhotosFromBuyedAlbum);
   app.post('/users/sessions', validateSchemaAndFail(signIn), usersController.signIn);
+  app.post('/users/sessions/invalidate_all', authenticate, usersController.invalidateSessions);
   app.post('/users', validateSchemaAndFail(signUp), usersController.createUser);
   app.get('/users', authenticate, validateSchemaAndFail(getUsersSchema), usersController.getUsers);
 
