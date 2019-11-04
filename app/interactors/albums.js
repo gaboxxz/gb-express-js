@@ -22,3 +22,16 @@ exports.userBuysAlbum = (albumId, userId) =>
         throw errors.databaseError(err.message);
       });
     });
+
+exports.getPhotosFromAlbumByIdAndUser = (albumId, userId) =>
+  db.albumsByUser
+    .findOne({ where: { userId, albumId } })
+    .catch(err => {
+      throw errors.databaseError(err.message);
+    })
+    .then(albumByUser => {
+      if (!albumByUser) {
+        throw errors.notFoundError(errorMessages.userAlreadyHasAlbum);
+      }
+      return albums.getPhotosByAlbumId(albumId);
+    });
